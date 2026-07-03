@@ -18,6 +18,8 @@ const kindOptions: { value: QRKind; label: string }[] = [
   { value: "vcard", label: "vCard" },
   { value: "upi", label: "UPI" },
   { value: "deeplink", label: "Deep link" },
+  { value: "calendar", label: "Calendar" },
+  { value: "crypto", label: "Crypto" },
 ];
 
 export function QRInputPanel() {
@@ -35,10 +37,11 @@ export function QRInputPanel() {
     mode: "onChange",
   });
   const selectedTemplate = useQRStore((state) => state.selectedTemplate);
+  const kind = watch("kind");
 
   useEffect(() => {
     const subscription = watch((value) =>
-      setFormValues(value as Partial<QRFormValues>)
+      setFormValues(value as Partial<QRFormValues>),
     );
     return () => subscription.unsubscribe();
   }, [watch, setFormValues]);
@@ -106,17 +109,33 @@ export function QRInputPanel() {
         name="content"
         render={({ field }) => (
           <View style={{ gap: 8 }}>
-            <FieldLabel>Destination or message</FieldLabel>
+            <FieldLabel>
+              {kind === "calendar"
+                ? "Event name"
+                : kind === "crypto"
+                  ? "Wallet address"
+                  : "Destination or message"}
+            </FieldLabel>
             <Input
               value={field.value}
               onChangeText={field.onChange}
-              placeholder="pixelqr.app"
-              multiline={watch("kind") === "text"}
+              placeholder={
+                kind === "calendar"
+                  ? "Team standup"
+                  : kind === "crypto"
+                    ? "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+                    : "pixelqr.app"
+              }
+              multiline={kind === "text"}
             />
             {errors.content ? (
               <Text
                 selectable
-                style={{ color: colors.accent, fontWeight: "700", fontSize: 12 }}
+                style={{
+                  color: colors.accent,
+                  fontWeight: "700",
+                  fontSize: 12,
+                }}
               >
                 {errors.content.message}
               </Text>
@@ -125,7 +144,7 @@ export function QRInputPanel() {
         )}
       />
 
-      {watch("kind") === "email" ? (
+      {kind === "email" ? (
         <Controller
           control={control}
           name="emailSubject"
@@ -142,7 +161,7 @@ export function QRInputPanel() {
         />
       ) : null}
 
-      {watch("kind") === "phone" ? (
+      {kind === "phone" ? (
         <Controller
           control={control}
           name="phoneCountryCode"
@@ -159,7 +178,7 @@ export function QRInputPanel() {
         />
       ) : null}
 
-      {watch("kind") === "wifi" ? (
+      {kind === "wifi" ? (
         <View style={{ gap: 12 }}>
           <Controller
             control={control}
@@ -185,6 +204,96 @@ export function QRInputPanel() {
                   value={field.value}
                   onChangeText={field.onChange}
                   placeholder="Password"
+                />
+              </View>
+            )}
+          />
+        </View>
+      ) : null}
+
+      {kind === "calendar" ? (
+        <View style={{ gap: 12 }}>
+          <Controller
+            control={control}
+            name="calendarDate"
+            render={({ field }) => (
+              <View style={{ gap: 8 }}>
+                <FieldLabel>Date & time</FieldLabel>
+                <Input
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  placeholder="2026-08-15T10:00"
+                />
+              </View>
+            )}
+          />
+          <Controller
+            control={control}
+            name="calendarLocation"
+            render={({ field }) => (
+              <View style={{ gap: 8 }}>
+                <FieldLabel>Location</FieldLabel>
+                <Input
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  placeholder="Conference Room A"
+                />
+              </View>
+            )}
+          />
+          <Controller
+            control={control}
+            name="calendarDescription"
+            render={({ field }) => (
+              <View style={{ gap: 8 }}>
+                <FieldLabel>Description</FieldLabel>
+                <Input
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  placeholder="Weekly sync with the team"
+                  multiline
+                />
+              </View>
+            )}
+          />
+        </View>
+      ) : null}
+
+      {kind === "crypto" ? (
+        <View style={{ gap: 12 }}>
+          <Controller
+            control={control}
+            name="cryptoCurrency"
+            render={({ field }) => (
+              <View style={{ gap: 8 }}>
+                <FieldLabel>Currency</FieldLabel>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                  <SelectPill
+                    value={field.value}
+                    option="bitcoin"
+                    label="Bitcoin"
+                    onSelect={(v) => field.onChange(v)}
+                  />
+                  <SelectPill
+                    value={field.value}
+                    option="ethereum"
+                    label="Ethereum"
+                    onSelect={(v) => field.onChange(v)}
+                  />
+                </View>
+              </View>
+            )}
+          />
+          <Controller
+            control={control}
+            name="cryptoAmount"
+            render={({ field }) => (
+              <View style={{ gap: 8 }}>
+                <FieldLabel>Amount (optional)</FieldLabel>
+                <Input
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  placeholder="0.01"
                 />
               </View>
             )}

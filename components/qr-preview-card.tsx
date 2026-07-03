@@ -45,7 +45,11 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
         // fallback to plain QR
       }
     }
-    await downloadPng(payload, customization.foregroundColor, customization.backgroundColor);
+    await downloadPng(
+      payload,
+      customization.foregroundColor,
+      customization.backgroundColor,
+    );
   }, [payload, customization.foregroundColor, customization.backgroundColor]);
 
   return (
@@ -109,6 +113,10 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
             logoUri={customization.logoUri}
             logoSize={customization.logoSize}
             logoBackground={customization.logoBackground}
+            frameLabel={customization.frameLabel}
+            frameCtaText={customization.frameCtaText}
+            frameCtaColor={customization.frameCtaColor}
+            frameBorderWidth={customization.frameBorderWidth}
           />
         )}
       </View>
@@ -144,6 +152,10 @@ function PlainQrPreview({
   logoUri,
   logoSize,
   logoBackground,
+  frameLabel,
+  frameCtaText,
+  frameCtaColor,
+  frameBorderWidth,
 }: {
   payload: string;
   title: string;
@@ -157,20 +169,45 @@ function PlainQrPreview({
   logoUri?: string;
   logoSize: number;
   logoBackground: boolean;
+  frameLabel?: string;
+  frameCtaText?: string;
+  frameCtaColor?: string;
+  frameBorderWidth?: number;
 }) {
+  const isCustom = frameStyle === "custom";
+  const borderW = isCustom ? (frameBorderWidth ?? 4) : 4;
+
   return (
     <View
       style={{
         alignSelf: "center",
         backgroundColor: bgColor,
         padding: Math.max(8, padding),
-        borderWidth: frameStyle === "none" ? 0 : 4,
+        borderWidth: frameStyle === "none" ? 0 : borderW,
         borderColor: "#000",
         alignItems: "center",
         gap: 10,
-        boxShadow: frameStyle === "none" ? undefined : "6px 6px 0px 0px #000",
+        boxShadow:
+          frameStyle === "none" ? undefined : "6px 6px 0px 0px #000",
       }}
     >
+      {/* Custom frame label above QR */}
+      {isCustom && frameLabel ? (
+        <Text
+          selectable
+          style={{
+            color: foregroundColor,
+            fontWeight: "900",
+            fontSize: 16,
+            textTransform: "uppercase",
+            letterSpacing: 2,
+            textAlign: "center",
+          }}
+        >
+          {frameLabel}
+        </Text>
+      ) : null}
+
       <QRCode
         value={payload || "pixelqr.app"}
         size={qrSize}
@@ -183,6 +220,35 @@ function PlainQrPreview({
         quietZone={0}
         ecl="H"
       />
+
+      {/* Custom frame CTA below QR */}
+      {isCustom && frameCtaText ? (
+        <View
+          style={{
+            borderWidth: 3,
+            borderColor: "#000",
+            backgroundColor: frameCtaColor || colors.accent,
+            paddingHorizontal: 20,
+            paddingVertical: 10,
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          <Text
+            selectable
+            style={{
+              color: foregroundColor,
+              fontWeight: "900",
+              fontSize: 12,
+              letterSpacing: 1.5,
+              textTransform: "uppercase",
+            }}
+          >
+            {frameCtaText}
+          </Text>
+        </View>
+      ) : null}
+
       {title ? (
         <Text
           selectable
@@ -233,13 +299,16 @@ function StyledTemplatePreview({
 }) {
   const cardWidth = 320;
   const cardHeight =
-    visualStyle === "menu-poster" || visualStyle === "campaign-poster" ? 420 : 380;
+    visualStyle === "menu-poster" || visualStyle === "campaign-poster"
+      ? 420
+      : 380;
   const isPayment = visualStyle === "payment-standee";
   const isReview = visualStyle === "review-standee";
 
   if (visualStyle === "menu-poster" || visualStyle === "campaign-poster") {
     const posterBg = visualStyle === "menu-poster" ? "#f6b44d" : "#fff7ed";
-    const posterText = visualStyle === "menu-poster" ? "#4a2700" : foregroundColor;
+    const posterText =
+      visualStyle === "menu-poster" ? "#4a2700" : foregroundColor;
     return (
       <View
         style={{
@@ -537,7 +606,9 @@ function StyledTemplatePreview({
           {subtitle || "Scan to open"}
         </Text>
       </View>
-      <View style={{ alignSelf: "center", backgroundColor: "#ffffff", padding: 14 }}>
+      <View
+        style={{ alignSelf: "center", backgroundColor: "#ffffff", padding: 14 }}
+      >
         <QRCode
           value={payload || "pixelqr.app"}
           size={150}

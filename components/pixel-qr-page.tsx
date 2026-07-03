@@ -4,6 +4,8 @@ import { HeroSection } from "@/components/hero-section";
 import { QRGenerator } from "@/components/qr-generator";
 import { TemplateCard } from "@/components/template-card";
 import { SectionShell } from "@/components/ui";
+import { HistoryPanel } from "@/components/history-panel";
+import { BrandKitPanel } from "@/components/brand-kit-panel";
 import { colors } from "@/constants/theme";
 
 const templates = [
@@ -235,8 +237,20 @@ const features = [
     "Contrast, logo size, and quiet-zone checks help keep finished codes reliable.",
   ],
   [
-    "PNG/SVG export",
+    "PNG/SVG/PDF export",
     "Export clean assets for campaigns, signage, documents, and social posts.",
+  ],
+  [
+    "History & Brand Kits",
+    "Save your configurations and brand styles for quick reuse across projects.",
+  ],
+  [
+    "Calendar & Crypto QR",
+    "Generate calendar event QR codes and Bitcoin/Ethereum payment addresses.",
+  ],
+  [
+    "Custom frames with CTA",
+    "Add custom labels and call-to-action buttons to your QR code frames.",
   ],
 ] as const;
 
@@ -250,6 +264,8 @@ export function PixelQRPage() {
       <AppHeader />
       <HeroSection />
       <QRGenerator />
+      <HistorySection />
+      <BrandKitsSection />
       <FeaturesSection />
       <TemplatesSection />
       <Footer />
@@ -313,6 +329,51 @@ function SectionHeading({
         {body}
       </Text>
     </View>
+  );
+}
+
+function HistorySection() {
+  return (
+    <SectionShell
+      id="history"
+      style={{
+        backgroundColor: colors.background,
+        paddingVertical: 60,
+      }}
+    >
+      <View style={{ gap: 32 }}>
+        <SectionHeading
+          eyebrow="History"
+          title="Your saved QR configurations."
+          body="Save, browse, and restore previously generated QR codes."
+        />
+        <HistoryPanel />
+      </View>
+    </SectionShell>
+  );
+}
+
+function BrandKitsSection() {
+  return (
+    <SectionShell
+      id="brand-kits"
+      style={{
+        backgroundColor: colors.secondary,
+        borderTopWidth: 4,
+        borderBottomWidth: 4,
+        borderColor: "#000",
+        paddingVertical: 60,
+      }}
+    >
+      <View style={{ gap: 32 }}>
+        <SectionHeading
+          eyebrow="Brand Kits"
+          title="Reusable style presets."
+          body="Save your color schemes and styles as brand kits for consistent branding."
+        />
+        <BrandKitPanel />
+      </View>
+    </SectionShell>
   );
 }
 
@@ -531,7 +592,9 @@ function Footer() {
         </View>
         <PressableFooter
           label="Buy me a coffee"
-          onPress={() => Linking.openURL("https://buymeacoffee.com/adsalihac")}
+          onPress={() =>
+            Linking.openURL("https://buymeacoffee.com/adsalihac")
+          }
         />
       </View>
     </SectionShell>

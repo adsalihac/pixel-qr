@@ -1,15 +1,23 @@
-import { Pressable, Text, View } from "react-native";
+import { useState } from "react";
+import { Text, View } from "react-native";
 import { colors } from "@/constants/theme";
 import { ColorPicker } from "@/components/color-picker";
 import { GradientPicker } from "@/components/gradient-picker";
 import { LogoUploader } from "@/components/logo-uploader";
-import { Button, FieldLabel, Input, Panel, SelectPill, ToggleButton } from "@/components/ui";
+import {
+  Button,
+  FieldLabel,
+  Input,
+  Panel,
+  SelectPill,
+  ToggleButton,
+} from "@/components/ui";
 import { useQRStore } from "@/store/qr-store";
 import { DotStyle, EyeStyle, FrameStyle } from "@/types/qr";
 
 const dotStyles: DotStyle[] = ["square", "rounded", "circle", "soft"];
 const eyeStyles: EyeStyle[] = ["square", "rounded", "circle"];
-const frameStyles: FrameStyle[] = ["none", "simple", "label", "ticket"];
+const frameStyles: FrameStyle[] = ["none", "simple", "label", "ticket", "custom"];
 
 const numberOr = (value: string, fallback: number) => {
   const parsed = Number(value);
@@ -20,6 +28,15 @@ export function QRCustomizationPanel() {
   const customization = useQRStore((state) => state.customization);
   const setCustomization = useQRStore((state) => state.setCustomization);
   const resetCustomization = useQRStore((state) => state.resetCustomization);
+  const saveAsBrandKit = useQRStore((state) => state.saveAsBrandKit);
+  const [kitName, setKitName] = useState("");
+
+  const handleSaveKit = () => {
+    if (kitName.trim()) {
+      saveAsBrandKit(kitName.trim());
+      setKitName("");
+    }
+  };
 
   return (
     <Panel>
@@ -58,6 +75,29 @@ export function QRCustomizationPanel() {
           </Text>
         </View>
         <Button label="Reset" variant="outline" onPress={resetCustomization} />
+      </View>
+
+      {/* Brand Kit Save */}
+      <View
+        style={{
+          flexDirection: "row",
+          gap: 8,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <View style={{ flex: 1, minWidth: 140 }}>
+          <Input
+            value={kitName}
+            onChangeText={setKitName}
+            placeholder="Kit name"
+          />
+        </View>
+        <Button
+          label="Save as Kit"
+          variant="secondary"
+          onPress={handleSaveKit}
+        />
       </View>
 
       <View style={{ flexDirection: "row", gap: 14, flexWrap: "wrap" }}>
@@ -154,7 +194,9 @@ export function QRCustomizationPanel() {
           <Input
             value={String(customization.padding)}
             onChangeText={(value) =>
-              setCustomization({ padding: numberOr(value, customization.padding) })
+              setCustomization({
+                padding: numberOr(value, customization.padding),
+              })
             }
           />
         </View>
@@ -163,7 +205,9 @@ export function QRCustomizationPanel() {
           <Input
             value={String(customization.logoSize)}
             onChangeText={(value) =>
-              setCustomization({ logoSize: numberOr(value, customization.logoSize) })
+              setCustomization({
+                logoSize: numberOr(value, customization.logoSize),
+              })
             }
           />
         </View>
@@ -202,6 +246,41 @@ export function QRCustomizationPanel() {
           ))}
         </View>
       </View>
+
+      {/* Custom frame editor */}
+      {customization.frameStyle === "custom" ? (
+        <View style={{ gap: 12 }}>
+          <FieldLabel>Frame content</FieldLabel>
+          <Input
+            value={customization.frameLabel}
+            onChangeText={(frameLabel) => setCustomization({ frameLabel })}
+            placeholder="SCAN TO ORDER"
+          />
+          <Input
+            value={customization.frameCtaText}
+            onChangeText={(frameCtaText) => setCustomization({ frameCtaText })}
+            placeholder="Order now →"
+          />
+          <View style={{ flex: 1, minWidth: 190 }}>
+            <ColorPicker
+              label="CTA button color"
+              value={customization.frameCtaColor}
+              onChange={(frameCtaColor) => setCustomization({ frameCtaColor })}
+            />
+          </View>
+          <View style={{ flex: 1, minWidth: 130, gap: 8 }}>
+            <FieldLabel>Border width</FieldLabel>
+            <Input
+              value={String(customization.frameBorderWidth)}
+              onChangeText={(value) =>
+                setCustomization({
+                  frameBorderWidth: numberOr(value, customization.frameBorderWidth),
+                })
+              }
+            />
+          </View>
+        </View>
+      ) : null}
 
       <LogoUploader
         uri={customization.logoUri}

@@ -8,6 +8,7 @@ import {
   downloadSvg,
   sharePayload,
 } from "@/utils/export-qr";
+import { downloadPdf } from "@/utils/export-pdf";
 import { TemplateId } from "@/types/qr";
 
 export function ExportActions({
@@ -48,7 +49,7 @@ export function ExportActions({
             run(
               "PNG downloaded.",
               onDownloadPng ||
-                (() => downloadPng(payload, foregroundColor, backgroundColor))
+                (() => downloadPng(payload, foregroundColor, backgroundColor)),
             )
           }
         />
@@ -57,7 +58,16 @@ export function ExportActions({
           variant="secondary"
           onPress={() =>
             run("SVG downloaded.", () =>
-              downloadSvg(payload, foregroundColor, backgroundColor)
+              downloadSvg(payload, foregroundColor, backgroundColor),
+            )
+          }
+        />
+        <Button
+          label="Download PDF"
+          variant="secondary"
+          onPress={() =>
+            run("PDF print page opened.", () =>
+              downloadPdf(payload, foregroundColor, backgroundColor, title, subtitle),
             )
           }
         />

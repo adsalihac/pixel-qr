@@ -7,11 +7,13 @@ export type QRKind =
   | "wifi"
   | "vcard"
   | "upi"
-  | "deeplink";
+  | "deeplink"
+  | "calendar"
+  | "crypto";
 
 export type DotStyle = "square" | "rounded" | "circle" | "soft";
 export type EyeStyle = "square" | "rounded" | "circle";
-export type FrameStyle = "none" | "simple" | "label" | "ticket";
+export type FrameStyle = "none" | "simple" | "label" | "ticket" | "custom";
 
 export type GradientMode = "none" | "linear";
 
@@ -43,6 +45,12 @@ export type QRFormValues = {
   wifiEncryption: "WPA" | "WEP" | "nopass";
   title: string;
   subtitle: string;
+  calendarEventName: string;
+  calendarDate: string;
+  calendarLocation: string;
+  calendarDescription: string;
+  cryptoCurrency: "bitcoin" | "ethereum";
+  cryptoAmount: string;
 };
 
 export type QRCustomization = {
@@ -61,6 +69,10 @@ export type QRCustomization = {
   logoSize: number;
   logoBackground: boolean;
   frameStyle: FrameStyle;
+  frameLabel: string;
+  frameCtaText: string;
+  frameCtaColor: string;
+  frameBorderWidth: number;
 };
 
 export type ScanWarning = {
@@ -86,3 +98,22 @@ export type TemplateId =
   | "email"
   | "phone"
   | "product";
+
+export type HistoryEntry = {
+  id: string;
+  name: string;
+  createdAt: string;
+  formValues: QRFormValues;
+  customization: QRCustomization;
+  selectedTemplate?: TemplateId;
+};
+
+export type BrandKit = {
+  id: string;
+  name: string;
+  createdAt: string;
+  customization: Partial<QRCustomization>;
+};
+
+export type PrintSize = "1x1" | "2x3" | "3x4" | "4x6";
+export type PrintUnit = "inch" | "mm";

@@ -1,4 +1,5 @@
 import { QRFormValues } from "@/types/qr";
+import { buildCalendarPayload } from "@/utils/build-calendar-payload";
 
 const escapeWifi = (value: string) => value.replace(/[\\;,:"]/g, "\\$&");
 
@@ -22,6 +23,19 @@ export function buildQrPayload(values: QRFormValues) {
       return content.startsWith("upi://") ? content : `upi://pay?pa=${encodeURIComponent(content)}`;
     case "deeplink":
       return content;
+    case "calendar":
+      return buildCalendarPayload(
+        values.calendarEventName || content,
+        values.calendarDate,
+        values.calendarLocation,
+        values.calendarDescription,
+      );
+    case "crypto": {
+      const currency = values.cryptoCurrency || "bitcoin";
+      const prefix = currency === "ethereum" ? "ethereum:" : "bitcoin:";
+      const amount = values.cryptoAmount ? `?amount=${values.cryptoAmount}` : "";
+      return `${prefix}${content}${amount}`;
+    }
     case "text":
     default:
       return content;
