@@ -9,6 +9,8 @@ import { TemplateVisualStyle } from "@/types/qr";
 import { buildQrPayload } from "@/utils/qr-payload";
 import { getScanSafety } from "@/utils/scan-safety";
 import { getTemplateVisualStyle } from "@/utils/template-style";
+import { downloadPng } from "@/utils/export-qr";
+import { useRef, useCallback } from "react";
 
 export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
   const formValues = useQRStore((state) => state.formValues);
@@ -19,6 +21,28 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
   const templateStyle = getTemplateVisualStyle(selectedTemplate);
   const qrSize = Math.min(customization.size, compact ? 210 : 300);
   const bgColor = customization.transparentBackground ? "transparent" : customization.backgroundColor;
+  const previewRef = useRef<any>(null);
+
+  const handleDownloadPng = useCallback(async () => {
+    if (Platform.OS === "web" && typeof document !== "undefined") {
+      try {
+        const { toPng } = await import("html-to-image");
+        if (previewRef.current) {
+          const dataUrl = await toPng(previewRef.current, { quality: 1, pixelRatio: 2 });
+          const anchor = document.createElement("a");
+          anchor.href = dataUrl;
+          anchor.download = "pixelqr.png";
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          return;
+        }
+      } catch {
+        // fallback to plain QR
+      }
+    }
+    await downloadPng(payload, customization.foregroundColor, customization.backgroundColor);
+  }, [payload, customization.foregroundColor, customization.backgroundColor]);
 
   return (
     <View
@@ -45,36 +69,38 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
         </Text>
       </View>
 
-      {templateStyle && !compact ? (
-        <StyledTemplatePreview
-          visualStyle={templateStyle}
-          payload={payload}
-          title={formValues.title}
-          subtitle={formValues.subtitle}
-          foregroundColor={customization.foregroundColor}
-          backgroundColor={customization.backgroundColor}
-        />
-      ) : (
-        <PlainQrPreview
-          payload={payload}
-          title={formValues.title}
-          subtitle={formValues.subtitle}
-          qrSize={qrSize}
-          bgColor={bgColor}
-          foregroundColor={customization.foregroundColor}
-          backgroundColor={customization.backgroundColor}
-          frameStyle={customization.frameStyle}
-          padding={customization.padding}
-          logoUri={customization.logoUri}
-          logoSize={customization.logoSize}
-          logoBackground={customization.logoBackground}
-        />
-      )}
+      <View ref={previewRef} style={{ alignSelf: "center" }}>
+        {templateStyle && !compact ? (
+          <StyledTemplatePreview
+            visualStyle={templateStyle}
+            payload={payload}
+            title={formValues.title}
+            subtitle={formValues.subtitle}
+            foregroundColor={customization.foregroundColor}
+            backgroundColor={customization.backgroundColor}
+          />
+        ) : (
+          <PlainQrPreview
+            payload={payload}
+            title={formValues.title}
+            subtitle={formValues.subtitle}
+            qrSize={qrSize}
+            bgColor={bgColor}
+            foregroundColor={customization.foregroundColor}
+            backgroundColor={customization.backgroundColor}
+            frameStyle={customization.frameStyle}
+            padding={customization.padding}
+            logoUri={customization.logoUri}
+            logoSize={customization.logoSize}
+            logoBackground={customization.logoBackground}
+          />
+        )}
+      </View>
 
       {!compact ? (
         <>
           <ScanSafetyScore score={safety.score} warnings={safety.warnings} />
-          <ExportActions payload={payload} foregroundColor={customization.foregroundColor} backgroundColor={customization.backgroundColor} title={formValues.title} subtitle={formValues.subtitle} templateId={selectedTemplate} />
+          <ExportActions payload={payload} foregroundColor={customization.foregroundColor} backgroundColor={customization.backgroundColor} title={formValues.title} subtitle={formValues.subtitle} templateId={selectedTemplate} onDownloadPng={handleDownloadPng} />
         </>
       ) : null}
     </View>

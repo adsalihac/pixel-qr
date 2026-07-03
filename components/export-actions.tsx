@@ -11,7 +11,8 @@ export function ExportActions({
   backgroundColor,
   title,
   subtitle,
-  templateId
+  templateId,
+  onDownloadPng
 }: {
   payload: string;
   foregroundColor: string;
@@ -19,6 +20,7 @@ export function ExportActions({
   title: string;
   subtitle: string;
   templateId?: TemplateId;
+  onDownloadPng?: () => Promise<void>;
 }) {
   const [status, setStatus] = useState("");
 
@@ -35,7 +37,7 @@ export function ExportActions({
   return (
     <View style={{ gap: 10 }}>
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-        <Button label="Download PNG" onPress={() => run("PNG downloaded.", () => downloadPng(payload, foregroundColor, backgroundColor, { title, subtitle, templateId }))} />
+        <Button label="Download PNG" onPress={() => run("PNG downloaded.", onDownloadPng || (() => downloadPng(payload, foregroundColor, backgroundColor)))} />
         <Button label="Download SVG" variant="secondary" onPress={() => run("SVG downloaded.", () => downloadSvg(payload, foregroundColor, backgroundColor))} />
         <Button label="Copy" variant="secondary" onPress={() => run("Payload copied.", () => copyPayload(payload))} />
         <Button label="Share" variant="secondary" onPress={() => run("Share sheet opened.", () => sharePayload(payload))} />
