@@ -22,8 +22,8 @@ export function QRGenerator() {
   );
 
   return (
-    <SectionShell id="generator" style={{ backgroundColor: colorsBackground, paddingTop: 12, paddingBottom: 72 }}>
-      <View style={{ flexDirection: isDesktop ? "row" : "column", gap: 22, alignItems: "flex-start" }}>
+    <SectionShell id="generator" style={{ backgroundColor: colorsBackground, paddingTop: 20, paddingBottom: 84 }}>
+      <View style={{ flexDirection: isDesktop ? "row" : "column", gap: 24, alignItems: "flex-start" }}>
         {isDesktop ? (
           <>
             {controls}
@@ -40,4 +40,4 @@ export function QRGenerator() {
   );
 }
 
-const colorsBackground = "#f7f9fc";
+const colorsBackground = "#f3f5f9";

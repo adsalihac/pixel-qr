@@ -5,7 +5,7 @@ import { colors, shadows } from "@/constants/theme";
 export function SectionShell({ children, id, style }: { children: ReactNode; id?: string; style?: ViewStyle }) {
   return (
     <View nativeID={id} style={[{ width: "100%", alignItems: "center" }, style]}>
-      <View style={{ width: "100%", maxWidth: 1180, paddingHorizontal: 24 }}>{children}</View>
+      <View style={{ width: "100%", maxWidth: 1240, paddingHorizontal: 24 }}>{children}</View>
     </View>
   );
 }
@@ -24,18 +24,20 @@ export function Button({
     <Pressable
       onPress={onPress}
       style={({ pressed }) => ({
-        minHeight: 44,
-        paddingHorizontal: 18,
+        minHeight: 46,
+        paddingHorizontal: 20,
         borderRadius: 999,
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: isPrimary ? colors.primary : variant === "ghost" ? "transparent" : colors.surface,
-        borderWidth: variant === "ghost" ? 0 : 1,
-        borderColor: isPrimary ? colors.primary : colors.border,
-        opacity: pressed ? 0.82 : 1
+        borderWidth: variant === "ghost" ? 0 : 1.25,
+        borderColor: isPrimary ? colors.primaryDark : colors.border,
+        opacity: pressed ? 0.9 : 1,
+        transform: [{ translateY: pressed ? 1 : 0 }],
+        boxShadow: isPrimary ? shadows.subtle : undefined
       })}
     >
-      <Text selectable style={{ color: isPrimary ? "#ffffff" : colors.text, fontWeight: "700", fontSize: 14 }}>
+      <Text selectable style={{ color: isPrimary ? "#ffffff" : colors.text, fontWeight: "800", fontSize: 14 }}>
         {label}
       </Text>
     </Pressable>
@@ -44,7 +46,7 @@ export function Button({
 
 export function FieldLabel({ children }: { children: ReactNode }) {
   return (
-    <Text selectable style={{ color: colors.text, fontWeight: "700", fontSize: 13 }}>
+    <Text selectable style={{ color: colors.text, fontWeight: "800", fontSize: 13 }}>
       {children}
     </Text>
   );
@@ -69,15 +71,16 @@ export function Input({
       multiline={multiline}
       placeholderTextColor="#98a2b3"
       style={{
-        minHeight: multiline ? 96 : 46,
-        borderWidth: 1,
+        minHeight: multiline ? 102 : 48,
+        borderWidth: 1.25,
         borderColor: colors.border,
-        backgroundColor: colors.surface,
-        borderRadius: 12,
+        backgroundColor: "#fbfcfe",
+        borderRadius: 14,
         paddingHorizontal: 14,
         paddingVertical: 12,
         color: colors.text,
-        fontSize: 15
+        fontSize: 15,
+        boxShadow: shadows.subtle
       }}
     />
   );
@@ -89,11 +92,11 @@ export function Panel({ children, style }: { children: ReactNode; style?: ViewSt
       style={[
         {
           backgroundColor: colors.surface,
-          borderWidth: 1,
+          borderWidth: 1.25,
           borderColor: colors.border,
-          borderRadius: 18,
-          padding: 18,
-          gap: 16,
+          borderRadius: 22,
+          padding: 20,
+          gap: 18,
           boxShadow: shadows.panel,
           borderCurve: "continuous"
         },
@@ -121,14 +124,14 @@ export function SelectPill<T extends string>({
     <Pressable
       onPress={() => onSelect(option)}
       style={{
-        minHeight: 38,
-        paddingHorizontal: 13,
+        minHeight: 40,
+        paddingHorizontal: 14,
         borderRadius: 999,
         alignItems: "center",
         justifyContent: "center",
-        borderWidth: 1,
+        borderWidth: 1.25,
         borderColor: active ? colors.primary : colors.border,
-        backgroundColor: active ? "#eff6ff" : colors.surface
+        backgroundColor: active ? "#e9f0ff" : "#f8fafd"
       }}
     >
       <Text selectable style={{ color: active ? colors.primaryDark : colors.textMuted, fontWeight: "700", fontSize: 13 }}>

@@ -48,9 +48,9 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
     <View
       style={{
         backgroundColor: colors.surface,
-        borderWidth: 1,
+        borderWidth: 1.25,
         borderColor: colors.border,
-        borderRadius: 24,
+        borderRadius: 26,
         padding: compact ? 16 : 22,
         gap: 18,
         boxShadow: shadows.soft,
@@ -61,10 +61,10 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
       <PreviewBackground />
 
       <View style={{ gap: 4 }}>
-        <Text selectable style={{ color: colors.text, fontSize: compact ? 16 : 20, fontWeight: "900" }}>
+        <Text selectable style={{ color: colors.text, fontSize: compact ? 16 : 21, fontWeight: "900" }}>
           Live preview
         </Text>
-        <Text selectable style={{ color: colors.textMuted, fontSize: 13 }}>
+        <Text selectable style={{ color: colors.textMuted, fontSize: 13, lineHeight: 19 }}>
           Export-ready, branded, and checked for reliable scanning.
         </Text>
       </View>
@@ -309,8 +309,8 @@ function PreviewBackground() {
   if (Platform.OS === "web") {
     return (
       <View style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "#ffffff" }}>
-        <View style={{ position: "absolute", top: 0, right: 0, width: "78%", height: "70%", backgroundColor: "#f1f5ff" }} />
-        <View style={{ position: "absolute", bottom: 0, left: 0, width: "70%", height: "56%", backgroundColor: "#f8fafc" }} />
+        <View style={{ position: "absolute", top: 0, right: 0, width: "82%", height: "72%", backgroundColor: "#ecf2ff" }} />
+        <View style={{ position: "absolute", bottom: 0, left: 0, width: "72%", height: "60%", backgroundColor: "#f2f6fb" }} />
       </View>
     );
   }
@@ -319,7 +319,7 @@ function PreviewBackground() {
     <View style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}>
       <Canvas style={{ flex: 1 }}>
         <RoundedRect x={0} y={0} width={900} height={700} r={24}>
-          <LinearGradient start={vec(0, 0)} end={vec(900, 700)} colors={["#ffffff", "#f1f5ff", "#f8fafc"]} />
+          <LinearGradient start={vec(0, 0)} end={vec(900, 700)} colors={["#ffffff", "#ecf2ff", "#f2f6fb"]} />
         </RoundedRect>
       </Canvas>
     </View>

@@ -246,14 +246,14 @@ export function PixelQRPage() {
 
 function SectionHeading({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
   return (
-    <View style={{ gap: 9, maxWidth: 700 }}>
-      <Text selectable style={{ color: colors.primary, fontSize: 13, fontWeight: "900", letterSpacing: 0 }}>
+    <View style={{ gap: 10, maxWidth: 760 }}>
+      <Text selectable style={{ color: colors.primaryDark, fontSize: 12, fontWeight: "900", letterSpacing: 0.5 }}>
         {eyebrow}
       </Text>
-      <Text selectable style={{ color: colors.text, fontSize: 34, lineHeight: 40, fontWeight: "900" }}>
+      <Text selectable style={{ color: colors.text, fontSize: 38, lineHeight: 44, fontWeight: "900" }}>
         {title}
       </Text>
-      <Text selectable style={{ color: colors.textMuted, fontSize: 16, lineHeight: 24 }}>
+      <Text selectable style={{ color: colors.textMuted, fontSize: 17, lineHeight: 26 }}>
         {body}
       </Text>
     </View>
@@ -262,8 +262,8 @@ function SectionHeading({ eyebrow, title, body }: { eyebrow: string; title: stri
 
 function TemplatesSection() {
   return (
-    <SectionShell id="templates" style={{ backgroundColor: colors.surface, paddingVertical: 72 }}>
-      <View style={{ gap: 28 }}>
+    <SectionShell id="templates" style={{ backgroundColor: colors.surface, paddingVertical: 84 }}>
+      <View style={{ gap: 32 }}>
         <SectionHeading
           eyebrow="Templates"
           title="Start from practical QR presets."
@@ -281,8 +281,8 @@ function TemplatesSection() {
 
 function FeaturesSection() {
   return (
-    <SectionShell id="features" style={{ backgroundColor: colors.background, paddingVertical: 72 }}>
-      <View style={{ gap: 28 }}>
+    <SectionShell id="features" style={{ backgroundColor: colors.background, paddingVertical: 84 }}>
+      <View style={{ gap: 32 }}>
         <SectionHeading
           eyebrow="Features"
           title="Designed for production QR workflows."
@@ -300,8 +300,8 @@ function FeaturesSection() {
 
 function ExportSection() {
   return (
-    <SectionShell id="export" style={{ backgroundColor: colors.surface, paddingVertical: 72 }}>
-      <View style={{ gap: 24 }}>
+    <SectionShell id="export" style={{ backgroundColor: colors.surface, paddingVertical: 84 }}>
+      <View style={{ gap: 26 }}>
         <SectionHeading
           eyebrow="Export"
           title="Ship QR assets wherever your team needs them."
@@ -309,8 +309,8 @@ function ExportSection() {
         />
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
           {exports.map((item) => (
-            <View key={item} style={{ borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background, borderRadius: 999, paddingHorizontal: 16, minHeight: 42, justifyContent: "center" }}>
-              <Text selectable style={{ color: colors.text, fontWeight: "800" }}>
+            <View key={item} style={{ borderWidth: 1.25, borderColor: colors.border, backgroundColor: "#f8fafd", borderRadius: 999, paddingHorizontal: 16, minHeight: 42, justifyContent: "center" }}>
+              <Text selectable style={{ color: colors.text, fontWeight: "800", fontSize: 13 }}>
                 {item}
               </Text>
             </View>
@@ -327,19 +327,19 @@ function ExportSection() {
 function Footer() {
   const links = ["Privacy", "Terms", "GitHub", "Contact"];
   return (
-    <SectionShell style={{ backgroundColor: "#0f172a", paddingVertical: 30 }}>
+    <SectionShell style={{ backgroundColor: "#0b1220", paddingVertical: 34 }}>
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 18, flexWrap: "wrap" }}>
-        <View style={{ gap: 5 }}>
-          <Text selectable style={{ color: "#ffffff", fontSize: 18, fontWeight: "900" }}>
+        <View style={{ gap: 6 }}>
+          <Text selectable style={{ color: "#ffffff", fontSize: 20, fontWeight: "900" }}>
             PixelQR
           </Text>
-          <Text selectable style={{ color: "#cbd5e1", fontSize: 13 }}>
-            Beautiful, branded, scan-safe QR codes.
+          <Text selectable style={{ color: "#9fb0c9", fontSize: 13 }}>
+            Professional QR workflows for modern teams.
           </Text>
         </View>
         <View style={{ flexDirection: "row", gap: 16, flexWrap: "wrap" }}>
           {links.map((link) => (
-            <Text key={link} selectable style={{ color: "#e2e8f0", fontWeight: "700", fontSize: 13 }}>
+            <Text key={link} selectable style={{ color: "#d4deed", fontWeight: "800", fontSize: 13 }}>
               {link}
             </Text>
           ))}

@@ -7,19 +7,36 @@ import { scrollToSection } from "@/utils/scroll-to-section";
 export function HeroSection() {
   const { width } = useWindowDimensions();
   const isDesktop = width >= 900;
+  const chips = ["ISO-friendly contrast", "One-click exports", "Template-first workflow"];
 
   return (
-    <SectionShell id="top" style={{ backgroundColor: colors.background, paddingTop: 48, paddingBottom: 68 }}>
+    <SectionShell id="top" style={{ backgroundColor: colors.background, paddingTop: 56, paddingBottom: 74 }}>
       <View style={{ flexDirection: isDesktop ? "row" : "column", gap: 34, alignItems: "center" }}>
-        <View style={{ flex: 1, gap: 22, minWidth: 0 }}>
-          <View style={{ gap: 14 }}>
-            <Text selectable style={{ color: colors.text, fontSize: isDesktop ? 58 : 40, lineHeight: isDesktop ? 64 : 46, fontWeight: "900" }}>
-              Create beautiful QR codes in seconds.
+        <View style={{ flex: 1, gap: 24, minWidth: 0 }}>
+          <View style={{ gap: 16 }}>
+            <View style={{ alignSelf: "flex-start", borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: "#ffffff", paddingHorizontal: 12, minHeight: 30, justifyContent: "center" }}>
+              <Text selectable style={{ color: colors.primaryDark, fontWeight: "800", fontSize: 12 }}>
+                PROFESSIONAL QR STUDIO
+              </Text>
+            </View>
+            <Text selectable style={{ color: colors.text, fontSize: isDesktop ? 56 : 38, lineHeight: isDesktop ? 62 : 44, fontWeight: "900" }}>
+              Build production-ready QR experiences.
             </Text>
             <Text selectable style={{ color: colors.textMuted, fontSize: 18, lineHeight: 28, maxWidth: 620 }}>
-              PixelQR helps teams generate branded, customizable, and scan-safe QR codes for campaigns, menus, products, payments, apps, and everyday workflows.
+              PixelQR gives your team a modern workspace for branded, scan-safe codes across campaigns, packaging, menu systems, payments, and product touchpoints.
             </Text>
           </View>
+
+          <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+            {chips.map((chip) => (
+              <View key={chip} style={{ borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: "#ffffff", paddingHorizontal: 12, minHeight: 34, justifyContent: "center" }}>
+                <Text selectable style={{ color: colors.text, fontWeight: "700", fontSize: 12 }}>
+                  {chip}
+                </Text>
+              </View>
+            ))}
+          </View>
+
           <View style={{ flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
             <Button label="Start Creating" onPress={() => scrollToSection("generator")} />
             <Button label="View Templates" variant="secondary" onPress={() => scrollToSection("templates")} />

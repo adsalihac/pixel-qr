@@ -44,20 +44,20 @@ export function TemplateCard({
       onPress={handleApply}
       style={({ pressed }) => ({
         flex: 1,
-        minWidth: 282,
+        minWidth: 286,
         backgroundColor: colors.surface,
-        borderWidth: 1,
+        borderWidth: 1.25,
         borderColor: isSelected ? accent : colors.border,
-        borderRadius: 16,
+        borderRadius: 18,
         padding: 0,
         overflow: "hidden",
         boxShadow: isSelected ? shadows.panel : shadows.subtle,
-        opacity: pressed ? 0.86 : 1,
+        opacity: pressed ? 0.92 : 1,
         transform: [{ translateY: pressed ? 1 : 0 }]
       })}
     >
       <View style={{ height: 6, backgroundColor: accent }} />
-      <View style={{ padding: 16, gap: 15 }}>
+      <View style={{ padding: 16, gap: 14 }}>
         <View style={{ gap: 9 }}>
           <DesignedTemplatePreview visualStyle={visualStyle} title={title} category={category} payload={payload} accent={accent} surface={surface} isSelected={isSelected} />
           {isSelected ? (
@@ -71,7 +71,7 @@ export function TemplateCard({
           <Text selectable style={{ color: colors.text, fontSize: 17, fontWeight: "900" }}>
             {title}
           </Text>
-          <Text selectable style={{ color: colors.textMuted, fontSize: 13, lineHeight: 19 }}>
+          <Text selectable style={{ color: colors.textMuted, fontSize: 13, lineHeight: 20 }}>
             {subtitle}
           </Text>
         </View>
@@ -81,7 +81,7 @@ export function TemplateCard({
             <Text selectable style={{ color: colors.text, fontSize: 12, fontWeight: "900" }}>
               {format}
             </Text>
-            <Text selectable style={{ color: colors.textMuted, fontSize: 12, lineHeight: 17 }}>
+              <Text selectable style={{ color: colors.textMuted, fontSize: 12, lineHeight: 18 }}>
               {bestFor}
             </Text>
           </View>
