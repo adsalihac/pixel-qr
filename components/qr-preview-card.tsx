@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState } from "react";
-import { Platform, Text, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Image, Platform, Text, View } from "react-native";
+import QRCodeLib from "qrcode";
 import { colors } from "@/constants/theme";
 import { ExportActions } from "@/components/export-actions";
 import { ScanSafetyScore } from "@/components/scan-safety-score";
@@ -26,9 +27,21 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
   const templateStyle = getTemplateVisualStyle(selectedTemplate);
   const qrSize = Math.min(customization.size, compact ? 210 : 280);
   const previewRef = useRef<any>(null);
+  const [plainDataUrl, setPlainDataUrl] = useState("");
 
   const ecl = customization.errorCorrectionLevel;
   const mp = customization.maskPattern === "auto" ? undefined : Number(customization.maskPattern);
+
+  useEffect(() => {
+    if (customization.basicMode && Platform.OS === "web") {
+      QRCodeLib.toDataURL(payload || "pixelqr.app", {
+        errorCorrectionLevel: ecl,
+        margin: 2,
+        scale: 12,
+        color: { dark: customization.foregroundColor, light: customization.backgroundColor },
+      }).then(setPlainDataUrl);
+    }
+  }, [customization.basicMode, payload, customization.foregroundColor, customization.backgroundColor, ecl]);
 
   const handleDownloadPng = useCallback(async () => {
     if (templateStyle && previewRef.current && Platform.OS === "web") {
@@ -47,6 +60,15 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
       } catch {
         // fall through to QR-only download
       }
+    }
+    if (customization.basicMode) {
+      await downloadPng(
+        payload,
+        customization.foregroundColor,
+        customization.backgroundColor,
+        ecl,
+      );
+      return;
     }
     const hasCustomStyle =
       customization.dotStyle !== "rounded" ||
@@ -159,22 +181,39 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
           />
         ) : (
           <View style={{ gap: 10, alignItems: "center" }}>
-            <BeautifiedQrCode
-              payload={payload}
-              size={qrSize}
-              foregroundColor={customization.foregroundColor}
-              backgroundColor={customization.backgroundColor}
-              dotStyle={customization.dotStyle}
-              eyeStyle={customization.eyeStyle}
-              gradientMode={customization.gradientMode}
-              gradientColor={customization.gradientColor}
-              beautification={beautification}
-              errorCorrectionLevel={ecl}
-              maskPattern={mp}
-              logoUri={customization.logoUri}
-              logoSize={customization.logoSize}
-              logoBackground={customization.logoBackground}
-            />
+            {customization.basicMode && plainDataUrl ? (
+              <View style={{ position: "relative" }}>
+                <Image
+                  source={{ uri: plainDataUrl }}
+                  style={{ width: qrSize, height: qrSize }}
+                />
+                {customization.logoUri ? (
+                  <View style={{ position: "absolute", left: qrSize / 2 - (qrSize * customization.logoSize) / 200, top: qrSize / 2 - (qrSize * customization.logoSize) / 200, width: (qrSize * customization.logoSize) / 100, height: (qrSize * customization.logoSize) / 100 }}>
+                    {customization.logoBackground ? (
+                      <View style={{ position: "absolute", left: -10, top: -10, width: (qrSize * customization.logoSize) / 100 + 20, height: (qrSize * customization.logoSize) / 100 + 20, backgroundColor: customization.backgroundColor, borderRadius: 8 }} />
+                    ) : null}
+                    <Image source={{ uri: customization.logoUri }} style={{ width: (qrSize * customization.logoSize) / 100, height: (qrSize * customization.logoSize) / 100 }} />
+                  </View>
+                ) : null}
+              </View>
+            ) : (
+              <BeautifiedQrCode
+                payload={payload}
+                size={qrSize}
+                foregroundColor={customization.foregroundColor}
+                backgroundColor={customization.backgroundColor}
+                dotStyle={customization.dotStyle}
+                eyeStyle={customization.eyeStyle}
+                gradientMode={customization.gradientMode}
+                gradientColor={customization.gradientColor}
+                beautification={beautification}
+                errorCorrectionLevel={ecl}
+                maskPattern={mp}
+                logoUri={customization.logoUri}
+                logoSize={customization.logoSize}
+                logoBackground={customization.logoBackground}
+              />
+            )}
             {formValues.title ? (
               <Text
                 selectable

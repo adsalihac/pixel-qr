@@ -86,6 +86,7 @@ export type QRCustomization = {
   logoUri?: string;
   logoSize: number;
   logoBackground: boolean;
+  basicMode: boolean;
   frameStyle: FrameStyle;
   frameLabel: string;
   frameCtaText: string;

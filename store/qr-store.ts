@@ -63,6 +63,7 @@ export const defaultCustomization: QRCustomization = {
   shadowDepth: "medium",
   errorCorrectionLevel: "H",
   maskPattern: "auto",
+  basicMode: false,
 };
 
 export const defaultBeautification: QrBeautification = {

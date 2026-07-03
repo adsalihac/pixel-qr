@@ -193,6 +193,22 @@ export function QRCustomizationPanel() {
         </View>
       </View>
 
+      <View style={{ gap: 8 }}>
+        <FieldLabel>Mode</FieldLabel>
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <Button
+            label="Basic"
+            variant={customization.basicMode ? "primary" : "outline"}
+            onPress={() => setCustomization({ basicMode: true })}
+          />
+          <Button
+            label="Styled"
+            variant={!customization.basicMode ? "primary" : "outline"}
+            onPress={() => setCustomization({ basicMode: false })}
+          />
+        </View>
+      </View>
+
       <View style={{ flexDirection: "row", gap: 14, flexWrap: "wrap" }}>
         <View style={{ flex: 1, minWidth: 130, gap: 8 }}>
           <FieldLabel>QR size</FieldLabel>
