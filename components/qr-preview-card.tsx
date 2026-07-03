@@ -23,9 +23,6 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
   const safety = getScanSafety(customization);
   const templateStyle = getTemplateVisualStyle(selectedTemplate);
   const qrSize = Math.min(customization.size, compact ? 210 : 280);
-  const bgColor = customization.transparentBackground
-    ? "transparent"
-    : customization.backgroundColor;
 
   const ecl = customization.errorCorrectionLevel;
   const mp = customization.maskPattern === "auto" ? undefined : Number(customization.maskPattern);
@@ -108,13 +105,17 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
             backgroundColor={customization.backgroundColor}
             ecl={ecl}
           />
-        ) : beautification.enabled && !compact ? (
+        ) : (
           <View style={{ gap: 10, alignItems: "center" }}>
             <BeautifiedQrCode
               payload={payload}
               size={qrSize}
               foregroundColor={customization.foregroundColor}
               backgroundColor={customization.backgroundColor}
+              dotStyle={customization.dotStyle}
+              eyeStyle={customization.eyeStyle}
+              gradientMode={customization.gradientMode}
+              gradientColor={customization.gradientColor}
               beautification={beautification}
               errorCorrectionLevel={ecl}
               maskPattern={mp}
@@ -149,28 +150,6 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
               </Text>
             ) : null}
           </View>
-        ) : (
-          <PlainQrPreview
-            payload={payload}
-            title={formValues.title}
-            subtitle={formValues.subtitle}
-            qrSize={qrSize}
-            bgColor={bgColor}
-            foregroundColor={customization.foregroundColor}
-            backgroundColor={customization.backgroundColor}
-            frameStyle={customization.frameStyle}
-            padding={customization.padding}
-            logoUri={customization.logoUri}
-            logoSize={customization.logoSize}
-            logoBackground={customization.logoBackground}
-            frameLabel={customization.frameLabel}
-            frameCtaText={customization.frameCtaText}
-            frameCtaColor={customization.frameCtaColor}
-            frameBorderWidth={customization.frameBorderWidth}
-            cornerRadius={customization.cornerRadius}
-            shadowDepth={customization.shadowDepth}
-            ecl={ecl}
-          />
         )}
       </View>
 
@@ -257,160 +236,6 @@ function AiStyleSuggestion({ logoUri }: { logoUri: string }) {
         variant="outline"
         onPress={handleSuggest}
       />
-    </View>
-  );
-}
-
-function PlainQrPreview({
-  payload,
-  title,
-  subtitle,
-  qrSize,
-  bgColor,
-  foregroundColor,
-  backgroundColor,
-  frameStyle,
-  padding,
-  logoUri,
-  logoSize,
-  logoBackground,
-  frameLabel,
-  frameCtaText,
-  frameCtaColor,
-  frameBorderWidth,
-  cornerRadius,
-  shadowDepth,
-  ecl,
-}: {
-  payload: string;
-  title: string;
-  subtitle: string;
-  qrSize: number;
-  bgColor: string;
-  foregroundColor: string;
-  backgroundColor: string;
-  frameStyle: string;
-  padding: number;
-  logoUri?: string;
-  logoSize: number;
-  logoBackground: boolean;
-  frameLabel?: string;
-  frameCtaText?: string;
-  frameCtaColor?: string;
-  frameBorderWidth?: number;
-  cornerRadius?: number;
-  shadowDepth?: string;
-  ecl?: "L" | "M" | "Q" | "H";
-}) {
-  const isCustom = frameStyle === "custom";
-  const borderW = isCustom ? (frameBorderWidth ?? 4) : 4;
-  const radius = Math.min(Math.max(cornerRadius ?? 0, 0), 20);
-  const shadowMap: Record<string, string> = {
-    small: "3px 3px 0px 0px #000",
-    medium: "6px 6px 0px 0px #000",
-    large: "10px 10px 0px 0px #000",
-  };
-  const shadow = shadowMap[shadowDepth ?? "medium"];
-
-  return (
-    <View
-      style={{
-        alignSelf: "center",
-        backgroundColor: bgColor,
-        padding: Math.max(8, padding),
-        borderWidth: frameStyle === "none" ? 0 : borderW,
-        borderColor: "#000",
-        borderRadius: radius,
-        alignItems: "center",
-        gap: 10,
-        boxShadow: frameStyle === "none" ? undefined : shadow,
-      }}
-    >
-      {isCustom && frameLabel ? (
-        <Text
-          selectable
-          style={{
-            color: foregroundColor,
-            fontWeight: "900",
-            fontSize: 16,
-            textTransform: "uppercase",
-            letterSpacing: 2,
-            textAlign: "center",
-          }}
-        >
-          {frameLabel}
-        </Text>
-      ) : null}
-
-      <QRCode
-        value={payload || "pixelqr.app"}
-        size={qrSize}
-        color={foregroundColor}
-        backgroundColor={backgroundColor}
-        logo={logoUri ? { uri: logoUri } : undefined}
-        logoSize={logoUri ? Math.round((qrSize * logoSize) / 100) : 0}
-        logoBackgroundColor={logoBackground ? backgroundColor : "transparent"}
-        logoBorderRadius={0}
-        quietZone={0}
-        ecl={ecl ?? "H"}
-      />
-
-      {isCustom && frameCtaText ? (
-        <View
-          style={{
-            borderWidth: 3,
-            borderColor: "#000",
-            backgroundColor: frameCtaColor || colors.accent,
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-            width: "100%",
-            alignItems: "center",
-          }}
-        >
-          <Text
-            selectable
-            style={{
-              color: foregroundColor,
-              fontWeight: "900",
-              fontSize: 12,
-              letterSpacing: 1.5,
-              textTransform: "uppercase",
-            }}
-          >
-            {frameCtaText}
-          </Text>
-        </View>
-      ) : null}
-
-      {title ? (
-        <Text
-          selectable
-          style={{
-            color: colors.foreground,
-            fontWeight: "900",
-            fontSize: 18,
-            textAlign: "center",
-            textTransform: "uppercase",
-            letterSpacing: -0.3,
-          }}
-        >
-          {title}
-        </Text>
-      ) : null}
-      {subtitle ? (
-        <Text
-          selectable
-          style={{
-            color: colors.foreground,
-            fontWeight: "700",
-            fontSize: 13,
-            textAlign: "center",
-            opacity: 0.65,
-          }}
-        >
-          {subtitle}
-        </Text>
-      ) : null}
     </View>
   );
 }
