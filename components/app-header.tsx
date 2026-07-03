@@ -1,6 +1,7 @@
 import { Linking, Pressable, Text, View, useWindowDimensions } from "react-native";
 import { colors } from "@/constants/theme";
 import { SectionShell } from "@/components/ui";
+import { scrollToSection } from "@/utils/scroll-to-section";
 
 export function AppHeader() {
   const { width } = useWindowDimensions();

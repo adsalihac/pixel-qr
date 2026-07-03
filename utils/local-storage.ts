@@ -124,6 +124,7 @@ export function getSnapshots(): DesignSnapshot[] {
 export function saveSnapshot(snapshot: DesignSnapshot): DesignSnapshot[] {
   const list = getSnapshots();
   list.unshift(snapshot);
+  if (list.length > 60) list.length = 60;
   write(SNAPSHOTS_KEY, list);
   return list;
 }
