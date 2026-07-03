@@ -37,6 +37,7 @@ export const defaultFormValues: QRFormValues = {
   calendarDescription: "",
   cryptoCurrency: "bitcoin",
   cryptoAmount: "",
+  expiresAt: "",
 };
 
 export const defaultCustomization: QRCustomization = {

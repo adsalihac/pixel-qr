@@ -58,6 +58,8 @@ export function AppHeader() {
             <NavButton label="Templates" onPress={() => scrollToSection("templates")} />
             <NavButton label="History" onPress={() => scrollToSection("history")} />
             <NavButton label="Brand Kits" onPress={() => scrollToSection("brand-kits")} />
+            <NavButton label="Sequential" onPress={() => scrollToSection("sequential")} />
+            <NavButton label="Labels" onPress={() => scrollToSection("labels")} />
             <NavButton label="Bulk" onPress={() => scrollToSection("bulk")} />
             <NavButton label="API" onPress={() => scrollToSection("api")} />
           </View>

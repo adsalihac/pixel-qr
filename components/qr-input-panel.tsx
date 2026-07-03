@@ -334,6 +334,24 @@ export function QRInputPanel() {
         />
       </View>
 
+      <View style={{ gap: 6 }}>
+        <FieldLabel>Expiry date (optional)</FieldLabel>
+        <Controller
+          control={control}
+          name="expiresAt"
+          render={({ field }) => (
+            <Input
+              value={field.value}
+              onChangeText={field.onChange}
+              placeholder="2026-12-31"
+            />
+          )}
+        />
+        <Text selectable style={{ color: colors.foreground, fontWeight: "700", fontSize: 10, opacity: 0.4 }}>
+          If set, the preview shows an expiry badge (visual only).
+        </Text>
+      </View>
+
       <Button
         label={showScanner ? "Hide Scanner" : "Scan QR Code"}
         variant="outline"

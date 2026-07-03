@@ -28,6 +28,7 @@ const exampleEntries: GalleryEntry[] = [
       calendarDescription: "",
       cryptoCurrency: "bitcoin",
       cryptoAmount: "",
+      expiresAt: "",
     },
     customization: {
       foregroundColor: "#3b1f0b",
@@ -78,6 +79,7 @@ const exampleEntries: GalleryEntry[] = [
       calendarDescription: "",
       cryptoCurrency: "bitcoin",
       cryptoAmount: "",
+      expiresAt: "",
     },
     customization: {
       foregroundColor: "#1e1b4b",
@@ -128,6 +130,7 @@ const exampleEntries: GalleryEntry[] = [
       calendarDescription: "",
       cryptoCurrency: "bitcoin",
       cryptoAmount: "",
+      expiresAt: "",
     },
     customization: {
       foregroundColor: "#000000",
@@ -178,6 +181,7 @@ const exampleEntries: GalleryEntry[] = [
       calendarDescription: "",
       cryptoCurrency: "bitcoin",
       cryptoAmount: "",
+      expiresAt: "",
     },
     customization: {
       foregroundColor: "#1a1a2e",

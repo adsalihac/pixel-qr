@@ -7,6 +7,8 @@ import { SectionShell } from "@/components/ui";
 import { HistoryPanel } from "@/components/history-panel";
 import { BrandKitPanel } from "@/components/brand-kit-panel";
 import { BulkGenerator } from "@/components/bulk-generator";
+import { SequentialGenerator } from "@/components/sequential-generator";
+import { LabelSheetGenerator } from "@/components/label-sheet-generator";
 import { ApiSection as ApiSectionPanel } from "@/components/api-section";
 import { colors } from "@/constants/theme";
 
@@ -471,6 +473,8 @@ export function PixelQRPage() {
       <TemplatesSection />
       <HistorySection />
       <BrandKitsSection />
+      <SequentialSection />
+      <LabelSheetSection />
       <BulkSection />
       <ApiDocsSection />
       <FeaturesSection />
@@ -578,6 +582,54 @@ function BrandKitsSection() {
           body="Save your color schemes and styles as brand kits for consistent branding."
         />
         <BrandKitPanel />
+      </View>
+    </SectionShell>
+  );
+}
+
+function SequentialSection() {
+  return (
+    <SectionShell
+      id="sequential"
+      style={{
+        backgroundColor: colors.background,
+        borderTopWidth: 4,
+        borderBottomWidth: 4,
+        borderColor: "#000",
+        paddingVertical: 60,
+      }}
+    >
+      <View style={{ gap: 32 }}>
+        <SectionHeading
+          eyebrow="Sequential"
+          title="Generate QR codes in sequence."
+          body="Create QR-001, QR-002, … with auto-incrementing labels and custom content templates."
+        />
+        <SequentialGenerator />
+      </View>
+    </SectionShell>
+  );
+}
+
+function LabelSheetSection() {
+  return (
+    <SectionShell
+      id="labels"
+      style={{
+        backgroundColor: colors.background,
+        borderTopWidth: 4,
+        borderBottomWidth: 4,
+        borderColor: "#000",
+        paddingVertical: 60,
+      }}
+    >
+      <View style={{ gap: 32 }}>
+        <SectionHeading
+          eyebrow="Labels"
+          title="Print QR codes on label sheets."
+          body="Arrange QR codes in a grid for Avery-compatible adhesive labels."
+        />
+        <LabelSheetGenerator />
       </View>
     </SectionShell>
   );

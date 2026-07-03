@@ -68,6 +68,7 @@ export type QRFormValues = {
   calendarDescription: string;
   cryptoCurrency: "bitcoin" | "ethereum";
   cryptoAmount: string;
+  expiresAt: string;
 };
 
 export type QRCustomization = {
@@ -170,6 +171,24 @@ export type BulkEntry = {
   label: string;
   content: string;
   payload: string;
+};
+
+export type SequentialConfig = {
+  prefix: string;
+  suffix: string;
+  start: number;
+  end: number;
+  padding: number;
+  contentTemplate: string;
+};
+
+export type LabelSheetSize = "a4" | "letter";
+export type LabelSize = "1x1" | "2x1" | "2x2" | "3x2";
+
+export type LabelSheetConfig = {
+  pageSize: LabelSheetSize;
+  labelSize: LabelSize;
+  useBulkEntries: boolean;
 };
 
 export type GalleryEntry = {
