@@ -1,13 +1,7 @@
-import { Pressable, Text, View } from "react-native";
+import { Linking, Pressable, Text, View } from "react-native";
 import { colors } from "@/constants/theme";
-import { Button, SectionShell } from "@/components/ui";
+import { SectionShell } from "@/components/ui";
 import { scrollToSection } from "@/utils/scroll-to-section";
-
-const links = [
-  { label: "Features", id: "features" },
-  { label: "Templates", id: "templates" },
-  { label: "Export", id: "export" }
-];
 
 export function AppHeader() {
   return (
@@ -23,16 +17,23 @@ export function AppHeader() {
             PixelQR
           </Text>
         </Pressable>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 20, flexWrap: "wrap", justifyContent: "flex-end" }}>
-          {links.map((link) => (
-            <Pressable key={link.id} onPress={() => scrollToSection(link.id)}>
-              <Text selectable style={{ color: colors.textMuted, fontSize: 14, fontWeight: "800" }}>
-                {link.label}
-              </Text>
-            </Pressable>
-          ))}
-          <Button label="Create QR" onPress={() => scrollToSection("generator")} />
-        </View>
+        <Pressable
+          onPress={() => Linking.openURL("https://github.com/adsalihac/pixel-qr/fork")}
+          style={({ pressed }) => ({
+            minHeight: 42,
+            borderRadius: 999,
+            paddingHorizontal: 16,
+            borderWidth: 1.25,
+            borderColor: colors.border,
+            backgroundColor: "#ffffff",
+            justifyContent: "center",
+            opacity: pressed ? 0.9 : 1
+          })}
+        >
+          <Text selectable style={{ color: colors.text, fontSize: 13, fontWeight: "800" }}>
+            Contribute
+          </Text>
+        </Pressable>
       </View>
     </SectionShell>
   );

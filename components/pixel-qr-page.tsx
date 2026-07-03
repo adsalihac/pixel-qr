@@ -1,12 +1,10 @@
-import { ScrollView, Text, View } from "react-native";
+import { Linking, ScrollView, Text, View } from "react-native";
 import { AppHeader } from "@/components/app-header";
-import { FeatureCard } from "@/components/feature-card";
 import { HeroSection } from "@/components/hero-section";
 import { QRGenerator } from "@/components/qr-generator";
 import { TemplateCard } from "@/components/template-card";
-import { Button, SectionShell } from "@/components/ui";
+import { SectionShell } from "@/components/ui";
 import { colors } from "@/constants/theme";
-import { scrollToSection } from "@/utils/scroll-to-section";
 
 const templates = [
   {
@@ -224,11 +222,8 @@ const features = [
   ["Brand color customization", "Use calm defaults, precise hex colors, gradients, and reusable presets."],
   ["Logo support", "Add a square brand mark with sizing guidance to protect the QR matrix."],
   ["Scan-safe validation", "Contrast, logo size, and quiet-zone checks help keep finished codes reliable."],
-  ["PNG/SVG export", "Export clean assets for campaigns, signage, documents, and social posts."],
-  ["Web, Android, and iOS", "Built with Expo so the same product experience travels across platforms."]
+  ["PNG/SVG export", "Export clean assets for campaigns, signage, documents, and social posts."]
 ] as const;
-
-const exports = ["PNG", "SVG", "Transparent PNG", "Branded card export", "Poster/card layout export"];
 
 export function PixelQRPage() {
   return (
@@ -237,14 +232,12 @@ export function PixelQRPage() {
       <HeroSection />
       <QRGenerator />
       <TemplatesSection />
-      <FeaturesSection />
-      <ExportSection />
       <Footer />
     </ScrollView>
   );
 }
 
-function SectionHeading({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
+function SectionHeading({ eyebrow, title, body }: Readonly<{ eyebrow: string; title: string; body: string }>) {
   return (
     <View style={{ gap: 10, maxWidth: 760 }}>
       <Text selectable style={{ color: colors.primaryDark, fontSize: 12, fontWeight: "900", letterSpacing: 0.5 }}>
@@ -279,53 +272,8 @@ function TemplatesSection() {
   );
 }
 
-function FeaturesSection() {
-  return (
-    <SectionShell id="features" style={{ backgroundColor: colors.background, paddingVertical: 84 }}>
-      <View style={{ gap: 32 }}>
-        <SectionHeading
-          eyebrow="Features"
-          title="Designed for production QR workflows."
-          body="PixelQR keeps the interface focused while still covering the details teams expect from a serious QR design tool."
-        />
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 26 }}>
-          {features.map(([title, body]) => (
-            <FeatureCard key={title} title={title} body={body} />
-          ))}
-        </View>
-      </View>
-    </SectionShell>
-  );
-}
-
-function ExportSection() {
-  return (
-    <SectionShell id="export" style={{ backgroundColor: colors.surface, paddingVertical: 84 }}>
-      <View style={{ gap: 26 }}>
-        <SectionHeading
-          eyebrow="Export"
-          title="Ship QR assets wherever your team needs them."
-          body="Download production-ready QR files, share payloads, and prepare branded layouts for posters, menus, cards, or digital campaigns."
-        />
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-          {exports.map((item) => (
-            <View key={item} style={{ borderWidth: 1.25, borderColor: colors.border, backgroundColor: "#f8fafd", borderRadius: 999, paddingHorizontal: 16, minHeight: 42, justifyContent: "center" }}>
-              <Text selectable style={{ color: colors.text, fontWeight: "800", fontSize: 13 }}>
-                {item}
-              </Text>
-            </View>
-          ))}
-        </View>
-        <View>
-          <Button label="Create an export-ready QR" onPress={() => scrollToSection("generator")} />
-        </View>
-      </View>
-    </SectionShell>
-  );
-}
-
 function Footer() {
-  const links = ["Privacy", "Terms", "GitHub", "Contact"];
+  const year = new Date().getFullYear();
   return (
     <SectionShell style={{ backgroundColor: "#0b1220", paddingVertical: 34 }}>
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 18, flexWrap: "wrap" }}>
@@ -334,15 +282,31 @@ function Footer() {
             PixelQR
           </Text>
           <Text selectable style={{ color: "#9fb0c9", fontSize: 13 }}>
-            Professional QR workflows for modern teams.
+            Copyright {year}  
+            <Text selectable={false} onPress={() => Linking.openURL("https://github.com/adsalihac")} style={{ color: "#d4deed", textDecorationLine: "underline", fontWeight: "800" }}>
+            adsalihac
+            </Text>
           </Text>
         </View>
-        <View style={{ flexDirection: "row", gap: 16, flexWrap: "wrap" }}>
-          {links.map((link) => (
-            <Text key={link} selectable style={{ color: "#d4deed", fontWeight: "800", fontSize: 13 }}>
-              {link}
-            </Text>
-          ))}
+        <View>
+          <Text
+            selectable={false}
+            onPress={() => Linking.openURL("https://buymeacoffee.com/adsalihac")}
+            style={{
+              borderWidth: 1,
+              borderColor: "rgba(251,191,36,0.45)",
+              backgroundColor: "rgba(254,243,199,0.2)",
+              color: "#fbbf24",
+              fontWeight: "800",
+              fontSize: 12,
+              borderRadius: 999,
+              paddingHorizontal: 14,
+              paddingVertical: 8,
+              overflow: "hidden"
+            }}
+          >
+            Buy me a coffee
+          </Text>
         </View>
       </View>
     </SectionShell>
