@@ -204,3 +204,27 @@ export type GalleryEntry = {
   liked: boolean;
   isExample?: boolean;
 };
+
+export type Collection = {
+  id: string;
+  name: string;
+  createdAt: string;
+  entries: HistoryEntry[];
+};
+
+export type DesignSnapshot = {
+  id: string;
+  label: string;
+  timestamp: string;
+  formValues: QRFormValues;
+  customization: QRCustomization;
+  selectedTemplate?: TemplateId;
+};
+
+export type DailyInspiration = {
+  dayOfYear: number;
+  label: string;
+  form: Partial<QRFormValues>;
+  customization: Partial<QRCustomization>;
+  beautification?: Partial<QrBeautification>;
+};

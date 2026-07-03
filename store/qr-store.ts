@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import {
   BrandKit,
+  Collection,
+  DesignSnapshot,
   GalleryEntry,
   HistoryEntry,
   QrBeautification,
@@ -19,6 +21,12 @@ import {
   saveBrandKit as saveBrandKitStorage,
   saveHistoryEntry as saveHistoryEntryStorage,
   toggleGalleryLike as toggleGalleryLikeStorage,
+  saveCollection as saveCollectionStorage,
+  deleteCollection as deleteCollectionStorage,
+  getCollections,
+  saveSnapshot as saveSnapshotStorage,
+  deleteSnapshot as deleteSnapshotStorage,
+  getSnapshots,
 } from "@/utils/local-storage";
 
 export const defaultFormValues: QRFormValues = {
@@ -75,6 +83,13 @@ export const defaultBeautification: QrBeautification = {
   animationSpeed: 1,
 };
 
+type Snapshot = {
+  formValues: QRFormValues;
+  customization: QRCustomization;
+  beautification: QrBeautification;
+  selectedTemplate?: TemplateId;
+};
+
 type QRStore = {
   formValues: QRFormValues;
   customization: QRCustomization;
@@ -83,12 +98,26 @@ type QRStore = {
   history: HistoryEntry[];
   brandKits: BrandKit[];
   gallery: GalleryEntry[];
+
+  // Undo / Redo
+  undoStack: Snapshot[];
+  redoStack: Snapshot[];
+
+  // Collections
+  collections: Collection[];
+
+  // Snapshots
+  snapshots: DesignSnapshot[];
+
+  // Onboarding
+  onboardingDone: boolean;
+
   setFormValues: (values: Partial<QRFormValues>) => void;
   setCustomization: (values: Partial<QRCustomization>) => void;
   setBeautification: (values: Partial<QrBeautification>) => void;
   resetCustomization: () => void;
   applyTemplate: (template: TemplateId) => void;
-  saveToHistory: (name: string) => void;
+  saveToHistory: (name: string, collectionId?: string) => void;
   restoreFromHistory: (entry: HistoryEntry) => void;
   deleteFromHistory: (id: string) => void;
   refreshHistory: () => void;
@@ -106,6 +135,28 @@ type QRStore = {
   removeFromGallery: (id: string) => void;
   refreshGallery: () => void;
   restoreFromGallery: (entry: GalleryEntry) => void;
+
+  // Undo / Redo
+  undo: () => void;
+  redo: () => void;
+  pushUndo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
+
+  // Collections
+  createCollection: (name: string) => void;
+  deleteCollection: (id: string) => void;
+  renameCollection: (id: string, name: string) => void;
+  refreshCollections: () => void;
+
+  // Snapshots
+  takeSnapshot: (label?: string) => void;
+  restoreSnapshot: (snapshot: DesignSnapshot) => void;
+  deleteSnapshot: (id: string) => void;
+  refreshSnapshots: () => void;
+
+  // Onboarding
+  setOnboardingDone: () => void;
 };
 
 const templates: Record<
@@ -242,27 +293,52 @@ export const useQRStore = create<QRStore>((set, get) => ({
   history: [],
   brandKits: [],
   gallery: [],
-  setFormValues: (values) =>
-    set((state) => ({ formValues: { ...state.formValues, ...values } })),
-  setCustomization: (values) =>
-    set((state) => ({ customization: { ...state.customization, ...values } })),
-  setBeautification: (values) =>
-    set((state) => ({ beautification: { ...state.beautification, ...values } })),
-  resetCustomization: () =>
-    set({ customization: defaultCustomization, beautification: defaultBeautification, selectedTemplate: undefined }),
-  applyTemplate: (template) =>
+  undoStack: [],
+  redoStack: [],
+  collections: [],
+  snapshots: [],
+  onboardingDone: false,
+
+  setFormValues: (values) => {
+    get().pushUndo();
+    set((state) => ({ formValues: { ...state.formValues, ...values } }));
+  },
+  setCustomization: (values) => {
+    get().pushUndo();
+    set((state) => ({ customization: { ...state.customization, ...values } }));
+  },
+  setBeautification: (values) => {
+    get().pushUndo();
+    set((state) => ({ beautification: { ...state.beautification, ...values } }));
+  },
+  resetCustomization: () => {
+    get().pushUndo();
+    set({ customization: defaultCustomization, beautification: defaultBeautification, selectedTemplate: undefined });
+  },
+  applyTemplate: (template) => {
+    get().pushUndo();
     set((state) => ({
       formValues: { ...state.formValues, ...templates[template].form },
       customization: { ...state.customization, ...templates[template].customization },
       selectedTemplate: template,
-    })),
-  saveToHistory: (name: string) => {
+    }));
+  },
+  saveToHistory: (name: string, collectionId?: string) => {
     const state = get();
     const entry: HistoryEntry = {
       id: Date.now().toString(36), name, createdAt: new Date().toISOString(),
       formValues: state.formValues, customization: state.customization, selectedTemplate: state.selectedTemplate,
     };
-    set({ history: saveHistoryEntryStorage(entry) });
+    const newHistory = saveHistoryEntryStorage(entry);
+    set({ history: newHistory });
+    if (collectionId) {
+      const collection = state.collections.find((c) => c.id === collectionId);
+      if (collection) {
+        collection.entries.unshift(entry);
+        saveCollectionStorage(collection);
+        set({ collections: getCollections() });
+      }
+    }
   },
   restoreFromHistory: (entry: HistoryEntry) => {
     set({ formValues: entry.formValues, customization: entry.customization, selectedTemplate: entry.selectedTemplate });
@@ -298,5 +374,114 @@ export const useQRStore = create<QRStore>((set, get) => ({
   refreshGallery: () => set({ gallery: getGallery() }),
   restoreFromGallery: (entry: GalleryEntry) => {
     set({ formValues: entry.formValues, customization: entry.customization, selectedTemplate: entry.selectedTemplate });
+  },
+
+  // Undo / Redo
+  pushUndo: () => {
+    const state = get();
+    const snapshot: Snapshot = {
+      formValues: state.formValues,
+      customization: state.customization,
+      beautification: state.beautification,
+      selectedTemplate: state.selectedTemplate,
+    };
+    set((s) => ({
+      undoStack: [...s.undoStack.slice(-49), snapshot],
+      redoStack: [],
+    }));
+  },
+  undo: () => {
+    const state = get();
+    if (state.undoStack.length === 0) return;
+    const current: Snapshot = {
+      formValues: state.formValues,
+      customization: state.customization,
+      beautification: state.beautification,
+      selectedTemplate: state.selectedTemplate,
+    };
+    const prev = state.undoStack[state.undoStack.length - 1];
+    set({
+      formValues: prev.formValues,
+      customization: prev.customization,
+      beautification: prev.beautification,
+      selectedTemplate: prev.selectedTemplate,
+      undoStack: state.undoStack.slice(0, -1),
+      redoStack: [...state.redoStack, current],
+    });
+  },
+  redo: () => {
+    const state = get();
+    if (state.redoStack.length === 0) return;
+    const current: Snapshot = {
+      formValues: state.formValues,
+      customization: state.customization,
+      beautification: state.beautification,
+      selectedTemplate: state.selectedTemplate,
+    };
+    const next = state.redoStack[state.redoStack.length - 1];
+    set({
+      formValues: next.formValues,
+      customization: next.customization,
+      beautification: next.beautification,
+      selectedTemplate: next.selectedTemplate,
+      redoStack: state.redoStack.slice(0, -1),
+      undoStack: [...state.undoStack, current],
+    });
+  },
+  canUndo: () => get().undoStack.length > 0,
+  canRedo: () => get().redoStack.length > 0,
+
+  // Collections
+  createCollection: (name: string) => {
+    const collection: Collection = {
+      id: Date.now().toString(36), name, createdAt: new Date().toISOString(), entries: [],
+    };
+    saveCollectionStorage(collection);
+    set({ collections: getCollections() });
+  },
+  deleteCollection: (id: string) => {
+    deleteCollectionStorage(id);
+    set({ collections: getCollections() });
+  },
+  renameCollection: (id: string, name: string) => {
+    const collections = get().collections.map((c) =>
+      c.id === id ? { ...c, name } : c,
+    );
+    collections.forEach((c) => saveCollectionStorage(c));
+    set({ collections: getCollections() });
+  },
+  refreshCollections: () => set({ collections: getCollections() }),
+
+  // Snapshots
+  takeSnapshot: (label?: string) => {
+    const state = get();
+    const snapshot: DesignSnapshot = {
+      id: Date.now().toString(36),
+      label: label || `Snapshot ${state.snapshots.length + 1}`,
+      timestamp: new Date().toISOString(),
+      formValues: state.formValues,
+      customization: state.customization,
+      selectedTemplate: state.selectedTemplate,
+    };
+    saveSnapshotStorage(snapshot);
+    set({ snapshots: getSnapshots() });
+  },
+  restoreSnapshot: (snapshot: DesignSnapshot) => {
+    set({
+      formValues: snapshot.formValues,
+      customization: snapshot.customization,
+      selectedTemplate: snapshot.selectedTemplate,
+    });
+  },
+  deleteSnapshot: (id: string) => {
+    deleteSnapshotStorage(id);
+    set({ snapshots: getSnapshots() });
+  },
+  refreshSnapshots: () => set({ snapshots: getSnapshots() }),
+
+  // Onboarding
+  setOnboardingDone: () => {
+    try { localStorage.setItem("pixelqr_onboarding_done", "true"); } catch {}
+    set({ onboardingDone: true });
   },
 }));
