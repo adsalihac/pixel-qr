@@ -14,11 +14,12 @@ import {
   ToggleButton,
 } from "@/components/ui";
 import { useQRStore } from "@/store/qr-store";
-import { DotStyle, EyeStyle, FrameStyle } from "@/types/qr";
+import { DotStyle, EyeStyle, FrameStyle, ShadowDepth } from "@/types/qr";
 
-const dotStyles: DotStyle[] = ["square", "rounded", "circle", "soft"];
-const eyeStyles: EyeStyle[] = ["square", "rounded", "circle"];
-const frameStyles: FrameStyle[] = ["none", "simple", "label", "ticket", "custom"];
+const dotStyles: DotStyle[] = ["square", "rounded", "circle", "soft", "cross", "diamond", "leaf"];
+const eyeStyles: EyeStyle[] = ["square", "rounded", "circle", "leaf", "diamondAlt"];
+const frameStyles: FrameStyle[] = ["none", "simple", "label", "ticket", "custom", "bold", "double", "shadow"];
+const shadowDepths: ShadowDepth[] = ["small", "medium", "large"];
 
 const numberOr = (value: string, fallback: number) => {
   const parsed = Number(value);
@@ -231,6 +232,33 @@ export function QRCustomizationPanel() {
             setCustomization({ logoBackground: !customization.logoBackground })
           }
         />
+      </View>
+
+      {/* Corner radius + Shadow depth */}
+      <View style={{ flexDirection: "row", gap: 14, flexWrap: "wrap" }}>
+        <View style={{ flex: 1, minWidth: 130, gap: 8 }}>
+          <FieldLabel>Corner radius</FieldLabel>
+          <Input
+            value={String(customization.cornerRadius)}
+            onChangeText={(value) =>
+              setCustomization({ cornerRadius: numberOr(value, customization.cornerRadius) })
+            }
+          />
+        </View>
+        <View style={{ flex: 1, minWidth: 130, gap: 8 }}>
+          <FieldLabel>Shadow depth</FieldLabel>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
+            {shadowDepths.map((sd) => (
+              <SelectPill
+                key={sd}
+                value={customization.shadowDepth}
+                option={sd}
+                label={sd}
+                onSelect={(shadowDepth) => setCustomization({ shadowDepth })}
+              />
+            ))}
+          </View>
+        </View>
       </View>
 
       <View style={{ gap: 10 }}>

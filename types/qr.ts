@@ -11,11 +11,12 @@ export type QRKind =
   | "calendar"
   | "crypto";
 
-export type DotStyle = "square" | "rounded" | "circle" | "soft";
-export type EyeStyle = "square" | "rounded" | "circle";
-export type FrameStyle = "none" | "simple" | "label" | "ticket" | "custom";
+export type DotStyle = "square" | "rounded" | "circle" | "soft" | "cross" | "diamond" | "leaf";
+export type EyeStyle = "square" | "rounded" | "circle" | "leaf" | "diamondAlt";
+export type FrameStyle = "none" | "simple" | "label" | "ticket" | "custom" | "bold" | "double" | "shadow";
 
 export type GradientMode = "none" | "linear";
+export type ShadowDepth = "small" | "medium" | "large";
 
 export type TemplateVisualStyle =
   | "business-card"
@@ -33,7 +34,21 @@ export type TemplateVisualStyle =
   | "review-standee"
   | "email-card"
   | "call-card"
-  | "product-label";
+  | "product-label"
+  | "health-card"
+  | "realestate-card"
+  | "music-card"
+  | "podcast-card"
+  | "youtube-card"
+  | "wedding-card"
+  | "conference-card"
+  | "charity-card"
+  | "newsletter-card"
+  | "travel-card"
+  | "recipe-card"
+  | "survey-card"
+  | "fitness-card"
+  | "resume-card";
 
 export type QRFormValues = {
   kind: QRKind;
@@ -73,6 +88,8 @@ export type QRCustomization = {
   frameCtaText: string;
   frameCtaColor: string;
   frameBorderWidth: number;
+  cornerRadius: number;
+  shadowDepth: ShadowDepth;
 };
 
 export type ScanWarning = {
@@ -97,7 +114,21 @@ export type TemplateId =
   | "review"
   | "email"
   | "phone"
-  | "product";
+  | "product"
+  | "health"
+  | "realestate"
+  | "music"
+  | "podcast"
+  | "youtube"
+  | "wedding"
+  | "conference"
+  | "charity"
+  | "newsletter"
+  | "travel"
+  | "recipe"
+  | "survey"
+  | "fitness"
+  | "resume";
 
 export type HistoryEntry = {
   id: string;

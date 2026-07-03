@@ -6,6 +6,7 @@ import { useQRStore } from "@/store/qr-store";
 import { BeautifyPattern, ModuleShape } from "@/types/qr";
 
 const moduleShapes: ModuleShape[] = ["square", "rounded", "circle", "diamond", "droplet"];
+const dotStylesExtra: string[] = ["square", "rounded", "circle", "soft", "cross", "diamond", "leaf"];
 const patterns: BeautifyPattern[] = ["none", "dots", "crosses", "diamonds", "circles"];
 
 export function BeautifyOptions() {

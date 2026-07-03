@@ -8,7 +8,6 @@ import { HistoryPanel } from "@/components/history-panel";
 import { BrandKitPanel } from "@/components/brand-kit-panel";
 import { BulkGenerator } from "@/components/bulk-generator";
 import { ApiSection as ApiSectionPanel } from "@/components/api-section";
-import { CommunityGallery } from "@/components/community-gallery";
 import { colors } from "@/constants/theme";
 
 const templates = [
@@ -220,6 +219,188 @@ const templates = [
     fields: ["SKU", "Manual", "Warranty", "Support"],
     visualStyle: "product-label",
   },
+  {
+    id: "health",
+    title: "Health Pass QR",
+    subtitle: "Medical records, vaccination status, and health check-ins.",
+    category: "Health",
+    accent: "#059669",
+    surface: "#ecfdf5",
+    payload: "https://myhealthpass.app",
+    format: "Health pass",
+    bestFor: "Clinics, gyms, pharmacies, and vaccination centers.",
+    fields: ["Records", "Status", "Check-in", "Provider"],
+    visualStyle: "health-card",
+  },
+  {
+    id: "realestate",
+    title: "Real Estate QR",
+    subtitle: "Property listings, virtual tours, and agent contact.",
+    category: "Real Estate",
+    accent: "#d97706",
+    surface: "#fffbeb",
+    payload: "https://property.virtu.com/estate-42",
+    format: "Property link",
+    bestFor: "Open houses, flyers, signboards, and agent cards.",
+    fields: ["Listing", "Tour", "Price", "Agent"],
+    visualStyle: "realestate-card",
+  },
+  {
+    id: "music",
+    title: "Music QR",
+    subtitle: "Playlists, albums, and artist profiles on streaming platforms.",
+    category: "Music",
+    accent: "#22c55e",
+    surface: "#f0fdf4",
+    payload: "https://open.spotify.com/playlist",
+    format: "Playlist link",
+    bestFor: "Album art, flyers, merch, and venue posters.",
+    fields: ["Playlist", "Artist", "Album", "Platform"],
+    visualStyle: "music-card",
+  },
+  {
+    id: "podcast",
+    title: "Podcast QR",
+    subtitle: "Episode links, show notes, and subscription pages.",
+    category: "Podcast",
+    accent: "#a855f7",
+    surface: "#faf5ff",
+    payload: "https://podcasts.apple.com/thenarrative",
+    format: "Podcast link",
+    bestFor: "Show art, business cards, social posts, and merch.",
+    fields: ["Episode", "Show", "Platform", "Subscribe"],
+    visualStyle: "podcast-card",
+  },
+  {
+    id: "youtube",
+    title: "YouTube QR",
+    subtitle: "Channel links, video pages, and playlists.",
+    category: "YouTube",
+    accent: "#ef4444",
+    surface: "#fef2f2",
+    payload: "https://youtube.com/@pixelqr",
+    format: "Channel link",
+    bestFor: "Video thumbnails, merch, banners, and business cards.",
+    fields: ["Channel", "Video", "Subscribe", "Playlist"],
+    visualStyle: "youtube-card",
+  },
+  {
+    id: "wedding",
+    title: "Wedding QR",
+    subtitle: "RSVPs, registries, photo albums, and save-the-dates.",
+    category: "Wedding",
+    accent: "#db2777",
+    surface: "#fdf2f8",
+    payload: "https://ourwedding.app/rsvp",
+    format: "Wedding page",
+    bestFor: "Invitations, save-the-dates, place cards, and signage.",
+    fields: ["RSVP", "Registry", "Gallery", "Venue"],
+    visualStyle: "wedding-card",
+  },
+  {
+    id: "conference",
+    title: "Conference QR",
+    subtitle: "Speaker profiles, session info, and attendee networking.",
+    category: "Conference",
+    accent: "#0ea5e9",
+    surface: "#ecfeff",
+    payload: "BEGIN:VCARD\nFN:Dr. Sarah Chen\nEND:VCARD",
+    format: "Speaker badge",
+    bestFor: "Badges, session handouts, signage, and networking cards.",
+    fields: ["Speaker", "Session", "Company", "Contact"],
+    visualStyle: "conference-card",
+  },
+  {
+    id: "charity",
+    title: "Charity QR",
+    subtitle: "Donation pages, mission info, and volunteer sign-ups.",
+    category: "Charity",
+    accent: "#ec4899",
+    surface: "#fdf4ff",
+    payload: "https://donate.hope.org/give",
+    format: "Donation link",
+    bestFor: "Fundraising events, flyers, booths, and mailers.",
+    fields: ["Donate", "Mission", "Volunteer", "Impact"],
+    visualStyle: "charity-card",
+  },
+  {
+    id: "newsletter",
+    title: "Newsletter QR",
+    subtitle: "Sign-up pages, issue archives, and subscription links.",
+    category: "Newsletter",
+    accent: "#f59e0b",
+    surface: "#fefce8",
+    payload: "https://theweekly.pixelqr.app",
+    format: "Newsletter signup",
+    bestFor: "Blog posts, social media, events, and business cards.",
+    fields: ["Subscribe", "Archive", "Topics", "Frequency"],
+    visualStyle: "newsletter-card",
+  },
+  {
+    id: "travel",
+    title: "Travel QR",
+    subtitle: "Itineraries, booking confirmations, and destination guides.",
+    category: "Travel",
+    accent: "#06b6d4",
+    surface: "#ecfeff",
+    payload: "https://travel.pixelqr.app/itinerary",
+    format: "Trip itinerary",
+    bestFor: "Boarding passes, hotel keys, tour guides, and luggage tags.",
+    fields: ["Itinerary", "Bookings", "Maps", "Guide"],
+    visualStyle: "travel-card",
+  },
+  {
+    id: "recipe",
+    title: "Recipe QR",
+    subtitle: "Step-by-step recipes, ingredient lists, and cooking videos.",
+    category: "Food",
+    accent: "#ea580c",
+    surface: "#fff7ed",
+    payload: "https://recipes.pixelqr.app/pasta",
+    format: "Recipe card",
+    bestFor: "Cookbooks, food packaging, menus, and class handouts.",
+    fields: ["Ingredients", "Steps", "Video", "Time"],
+    visualStyle: "recipe-card",
+  },
+  {
+    id: "survey",
+    title: "Survey QR",
+    subtitle: "Feedback forms, polls, and customer satisfaction surveys.",
+    category: "Feedback",
+    accent: "#6366f1",
+    surface: "#eef2ff",
+    payload: "https://survey.pixelqr.app/feedback",
+    format: "Feedback form",
+    bestFor: "Receipts, counters, emails, and post-service cards.",
+    fields: ["Form", "Rating", "Anonymous", "Reward"],
+    visualStyle: "survey-card",
+  },
+  {
+    id: "fitness",
+    title: "Fitness QR",
+    subtitle: "Class schedules, booking pages, and membership info.",
+    category: "Fitness",
+    accent: "#dc2626",
+    surface: "#fef2f2",
+    payload: "https://fitstudio.app/classes",
+    format: "Class booking",
+    bestFor: "Gym counters, locker rooms, schedules, and promo cards.",
+    fields: ["Schedule", "Book", "Membership", "Trainer"],
+    visualStyle: "fitness-card",
+  },
+  {
+    id: "resume",
+    title: "Resume QR",
+    subtitle: "Digital resumes, portfolios, and career profiles.",
+    category: "Career",
+    accent: "#3b82f6",
+    surface: "#eff6ff",
+    payload: "BEGIN:VCARD\nFN:Jordan Lee\nEND:VCARD",
+    format: "Digital resume",
+    bestFor: "Business cards, networking events, portfolios, and email signatures.",
+    fields: ["Name", "Role", "Skills", "Contact"],
+    visualStyle: "resume-card",
+  },
 ] as const;
 
 const features = [
@@ -267,6 +448,14 @@ const features = [
     "REST API",
     "Programmatic QR generation for CI/CD pipelines and automation.",
   ],
+  [
+    "30 Ready Templates",
+    "From business cards to wedding RSVPs, health passes to resumes — a template for every use case.",
+  ],
+  [
+    "Advanced Customization",
+    "7 dot styles, 5 eye styles, 8 frame styles, corner radius, shadow depth, and QR beautification.",
+  ],
 ] as const;
 
 export function PixelQRPage() {
@@ -279,7 +468,6 @@ export function PixelQRPage() {
       <AppHeader />
       <HeroSection />
       <QRGenerator />
-      <GallerySection />
       <TemplatesSection />
       <HistorySection />
       <BrandKitsSection />
@@ -390,30 +578,6 @@ function BrandKitsSection() {
           body="Save your color schemes and styles as brand kits for consistent branding."
         />
         <BrandKitPanel />
-      </View>
-    </SectionShell>
-  );
-}
-
-function GallerySection() {
-  return (
-    <SectionShell
-      id="gallery"
-      style={{
-        backgroundColor: colors.background,
-        borderTopWidth: 4,
-        borderBottomWidth: 4,
-        borderColor: "#000",
-        paddingVertical: 60,
-      }}
-    >
-      <View style={{ gap: 32 }}>
-        <SectionHeading
-          eyebrow="Gallery"
-          title="Get inspired by the community."
-          body="Browse designs, like your favorites, and publish your own QR creations."
-        />
-        <CommunityGallery />
       </View>
     </SectionShell>
   );

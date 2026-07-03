@@ -178,6 +178,8 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
             frameCtaText={customization.frameCtaText}
             frameCtaColor={customization.frameCtaColor}
             frameBorderWidth={customization.frameBorderWidth}
+            cornerRadius={customization.cornerRadius}
+            shadowDepth={customization.shadowDepth}
           />
         )}
       </View>
@@ -281,6 +283,8 @@ function PlainQrPreview({
   frameCtaText,
   frameCtaColor,
   frameBorderWidth,
+  cornerRadius,
+  shadowDepth,
 }: {
   payload: string;
   title: string;
@@ -298,9 +302,18 @@ function PlainQrPreview({
   frameCtaText?: string;
   frameCtaColor?: string;
   frameBorderWidth?: number;
+  cornerRadius?: number;
+  shadowDepth?: string;
 }) {
   const isCustom = frameStyle === "custom";
   const borderW = isCustom ? (frameBorderWidth ?? 4) : 4;
+  const radius = Math.min(Math.max(cornerRadius ?? 0, 0), 20);
+  const shadowMap: Record<string, string> = {
+    small: "3px 3px 0px 0px #000",
+    medium: "6px 6px 0px 0px #000",
+    large: "10px 10px 0px 0px #000",
+  };
+  const shadow = shadowMap[shadowDepth ?? "medium"];
 
   return (
     <View
@@ -310,10 +323,10 @@ function PlainQrPreview({
         padding: Math.max(8, padding),
         borderWidth: frameStyle === "none" ? 0 : borderW,
         borderColor: "#000",
+        borderRadius: radius,
         alignItems: "center",
         gap: 10,
-        boxShadow:
-          frameStyle === "none" ? undefined : "6px 6px 0px 0px #000",
+        boxShadow: frameStyle === "none" ? undefined : shadow,
       }}
     >
       {isCustom && frameLabel ? (
@@ -422,11 +435,136 @@ function StyledTemplatePreview({
 }) {
   const cardWidth = 320;
   const cardHeight =
-    visualStyle === "menu-poster" || visualStyle === "campaign-poster"
+    visualStyle === "menu-poster" || visualStyle === "campaign-poster" || visualStyle === "music-card"
       ? 420
       : 380;
   const isPayment = visualStyle === "payment-standee";
   const isReview = visualStyle === "review-standee";
+  const isMusic = visualStyle === "music-card";
+  const isWedding = visualStyle === "wedding-card";
+  const isTravel = visualStyle === "travel-card";
+
+  if (isMusic) {
+    return (
+      <View
+        style={{
+          alignSelf: "center",
+          width: cardWidth,
+          minHeight: cardHeight,
+          backgroundColor: "#18181b",
+          borderWidth: 4,
+          borderColor: "#000",
+          padding: 26,
+          alignItems: "center",
+          justifyContent: "space-between",
+          boxShadow: "8px 8px 0px 0px #000",
+          overflow: "hidden",
+        }}
+      >
+        <View style={{ alignItems: "center", gap: 4, marginTop: 20 }}>
+          <Text selectable style={{ color: "#22c55e", fontWeight: "900", fontSize: 14, letterSpacing: 3 }}>
+            NOW PLAYING
+          </Text>
+          <Text selectable style={{ color: "#ffffff", fontWeight: "900", fontSize: 32, textAlign: "center" }}>
+            {title || "Weekly Vibes"}
+          </Text>
+          <Text selectable style={{ color: "#a3a3a3", fontWeight: "700", fontSize: 13 }}>
+            {subtitle || "Listen on Spotify"}
+          </Text>
+        </View>
+        {/* Decorative bars */}
+        {[0, 1, 2, 3].map((i) => (
+          <View
+            key={i}
+            style={{
+              position: "absolute",
+              bottom: 100 + i * 18,
+              right: 30 + i * 12,
+              width: 4,
+              height: 20 + i * 8,
+              backgroundColor: ["#22c55e", "#16a34a", "#15803d", "#166534"][i],
+              transform: [{ rotate: "-12deg" }],
+              opacity: 0.6,
+            }}
+          />
+        ))}
+        <View style={{ backgroundColor: "#ffffff", padding: 16, marginTop: 10 }}>
+          <QRCode value={payload || "pixelqr.app"} size={150} color="#000" backgroundColor="#fff" quietZone={0} ecl="H" />
+        </View>
+        <View style={{ flexDirection: "row", gap: 6 }}>
+          {["Spotify", "Apple", "YouTube"].map((p) => (
+            <View key={p} style={{ borderWidth: 2, borderColor: "#22c55e", paddingHorizontal: 8, paddingVertical: 4 }}>
+              <Text selectable style={{ color: "#22c55e", fontWeight: "900", fontSize: 9, letterSpacing: 1 }}>{p}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    );
+  }
+
+  if (isWedding) {
+    return (
+      <View
+        style={{
+          alignSelf: "center", width: cardWidth, minHeight: cardHeight,
+          backgroundColor: "#fdf2f8", borderWidth: 4, borderColor: "#000",
+          padding: 26, alignItems: "center", justifyContent: "center", gap: 14,
+          boxShadow: "8px 8px 0px 0px #000",
+        }}
+      >
+        {/* Decorative rings */}
+        <View style={{ position: "absolute", top: -50, right: -30, width: 140, height: 140, borderRadius: 999, borderWidth: 6, borderColor: "#db2777", opacity: 0.2 }} />
+        <View style={{ position: "absolute", bottom: -40, left: -20, width: 100, height: 100, borderRadius: 999, borderWidth: 6, borderColor: "#db2777", opacity: 0.15 }} />
+        <Text selectable style={{ color: "#db2777", fontWeight: "900", fontSize: 12, letterSpacing: 4 }}>SAVE THE DATE</Text>
+        <Text selectable style={{ color: "#4c1d95", fontWeight: "900", fontSize: 34, lineHeight: 38, textAlign: "center" }}>
+          {title || "Save the Date"}
+        </Text>
+        <View style={{ width: 60, height: 2, backgroundColor: "#db2777" }} />
+        <Text selectable style={{ color: "#4c1d95", fontWeight: "700", fontSize: 13, textAlign: "center", opacity: 0.7 }}>
+          {subtitle || "RSVP by August 1"}
+        </Text>
+        <View style={{ backgroundColor: "#ffffff", padding: 14, borderWidth: 3, borderColor: "#4c1d95" }}>
+          <QRCode value={payload || "pixelqr.app"} size={130} color="#4c1d95" backgroundColor="#fff" quietZone={0} ecl="H" />
+        </View>
+        <View style={{ flexDirection: "row", gap: 16 }}>
+          <Text selectable style={{ color: "#db2777", fontWeight: "900", fontSize: 11, letterSpacing: 1 }}>RSVP</Text>
+          <Text selectable style={{ color: "#db2777", fontWeight: "900", fontSize: 11, letterSpacing: 1 }}>REGISTRY</Text>
+          <Text selectable style={{ color: "#db2777", fontWeight: "900", fontSize: 11, letterSpacing: 1 }}>GALLERY</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (isTravel) {
+    return (
+      <View
+        style={{
+          alignSelf: "center", width: cardWidth, minHeight: cardHeight,
+          backgroundColor: "#0c4a6e", borderWidth: 4, borderColor: "#000",
+          padding: 26, alignItems: "center", justifyContent: "space-between",
+          boxShadow: "8px 8px 0px 0px #000",
+        }}
+      >
+        <View style={{ position: "absolute", top: 10, left: 10, width: 60, height: 60, borderRadius: 999, backgroundColor: "#06b6d4", opacity: 0.15 }} />
+        <View style={{ position: "absolute", bottom: 20, right: 20, width: 40, height: 40, borderRadius: 999, backgroundColor: "#06b6d4", opacity: 0.15 }} />
+        <View style={{ marginTop: 20, alignItems: "center" }}>
+          <Text selectable style={{ color: "#67e8f9", fontWeight: "900", fontSize: 12, letterSpacing: 3 }}>TRAVEL</Text>
+          <Text selectable style={{ color: "#ffffff", fontWeight: "900", fontSize: 30, textAlign: "center", marginTop: 4 }}>
+            {title || "Bali Trip '26"}
+          </Text>
+          <Text selectable style={{ color: "#67e8f9", fontWeight: "700", fontSize: 12, opacity: 0.8 }}>
+            {subtitle || "Itinerary & bookings"}
+          </Text>
+        </View>
+        <View style={{ backgroundColor: "#ffffff", padding: 14 }}>
+          <QRCode value={payload || "pixelqr.app"} size={140} color="#0c4a6e" backgroundColor="#fff" quietZone={0} ecl="H" />
+        </View>
+        <Text selectable style={{ color: "#67e8f9", fontWeight: "800", fontSize: 10, letterSpacing: 2 }}>
+          FLIGHTS • HOTEL • ACTIVITIES
+        </Text>
+      </View>
+    );
+  }
 
   if (visualStyle === "menu-poster" || visualStyle === "campaign-poster") {
     const posterBg = visualStyle === "menu-poster" ? "#f6b44d" : "#fff7ed";
@@ -747,29 +885,31 @@ function StyledTemplatePreview({
 
 function templateLabel(visualStyle: TemplateVisualStyle) {
   switch (visualStyle) {
-    case "wifi-card":
-      return "Guest Wi-Fi";
-    case "map-card":
-      return "Open in Maps";
-    case "coupon-ticket":
-      return "Save 20%";
-    case "event-pass":
-      return "Event Pass";
-    case "brand-header":
-      return "Brand Card";
-    case "product-label":
-      return "Product Info";
-    case "chat-card":
-      return "Chat Now";
-    case "call-card":
-      return "Call Now";
-    case "email-card":
-      return "Email Us";
-    case "app-card":
-      return "Download App";
-    case "social-card":
-      return "Follow Us";
-    default:
-      return "Scan QR";
+    case "wifi-card": return "Guest Wi-Fi";
+    case "map-card": return "Open in Maps";
+    case "coupon-ticket": return "Save 20%";
+    case "event-pass": return "Event Pass";
+    case "brand-header": return "Brand Card";
+    case "product-label": return "Product Info";
+    case "chat-card": return "Chat Now";
+    case "call-card": return "Call Now";
+    case "email-card": return "Email Us";
+    case "app-card": return "Download App";
+    case "social-card": return "Follow Us";
+    case "health-card": return "Health Pass";
+    case "realestate-card": return "Property";
+    case "music-card": return "Playlist";
+    case "podcast-card": return "Episode";
+    case "youtube-card": return "Watch Now";
+    case "wedding-card": return "Save the Date";
+    case "conference-card": return "Speaker";
+    case "charity-card": return "Donate";
+    case "newsletter-card": return "Subscribe";
+    case "travel-card": return "Itinerary";
+    case "recipe-card": return "Cook";
+    case "survey-card": return "Feedback";
+    case "fitness-card": return "Book Now";
+    case "resume-card": return "Hire Me";
+    default: return "Scan QR";
   }
 }
