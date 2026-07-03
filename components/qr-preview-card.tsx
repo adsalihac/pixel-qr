@@ -198,6 +198,7 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
                 ? handleDownloadAnimated
                 : undefined
             }
+            previewRef={previewRef}
           />
           {customization.logoUri ? (
             <AiStyleSuggestion logoUri={customization.logoUri} />

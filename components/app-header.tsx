@@ -55,6 +55,7 @@ export function AppHeader() {
         {!isMobile && (
           <View style={{ flexDirection: "row", gap: 8 }}>
             <NavButton label="Generator" onPress={() => scrollToSection("generator")} />
+            <NavButton label="Gallery" onPress={() => scrollToSection("gallery")} />
             <NavButton label="Templates" onPress={() => scrollToSection("templates")} />
             <NavButton label="History" onPress={() => scrollToSection("history")} />
             <NavButton label="Brand Kits" onPress={() => scrollToSection("brand-kits")} />

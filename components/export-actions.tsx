@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Text, View } from "react-native";
+import { useRef, useState } from "react";
+import { Platform, Text, View } from "react-native";
 import { colors } from "@/constants/theme";
 import { Button } from "@/components/ui";
 import {
@@ -9,6 +9,7 @@ import {
   sharePayload,
 } from "@/utils/export-qr";
 import { downloadPdf } from "@/utils/export-pdf";
+import { shareAsImage } from "@/utils/share-image";
 import { TemplateId } from "@/types/qr";
 
 export function ExportActions({
@@ -20,6 +21,7 @@ export function ExportActions({
   templateId,
   onDownloadPng,
   onDownloadAnimated,
+  previewRef,
 }: {
   payload: string;
   foregroundColor: string;
@@ -29,6 +31,7 @@ export function ExportActions({
   templateId?: TemplateId;
   onDownloadPng?: () => Promise<void>;
   onDownloadAnimated?: () => Promise<void>;
+  previewRef?: React.RefObject<any>;
 }) {
   const [status, setStatus] = useState("");
 
@@ -73,13 +76,27 @@ export function ExportActions({
             )
           }
         />
-        {onDownloadAnimated ? (
-          <Button
-            label="Animated SVG"
-            variant="secondary"
-            onPress={() => run("Animated SVG downloaded.", onDownloadAnimated)}
-          />
-        ) : null}
+          {onDownloadAnimated ? (
+            <Button
+              label="Animated SVG"
+              variant="secondary"
+              onPress={() => run("Animated SVG downloaded.", onDownloadAnimated)}
+            />
+          ) : null}
+          {Platform.OS === "web" ? (
+            <Button
+              label="Share Image"
+              variant="secondary"
+              onPress={() =>
+                run("Share image downloaded.", () =>
+                  shareAsImage(
+                    previewRef?.current,
+                    title || "PixelQR",
+                  ),
+                )
+              }
+            />
+          ) : null}
         <Button
           label="Copy"
           variant="outline"

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import {
   BrandKit,
+  GalleryEntry,
   HistoryEntry,
   QrBeautification,
   QRCustomization,
@@ -11,9 +12,13 @@ import {
   deleteBrandKit as deleteBrandKitStorage,
   deleteHistoryEntry as deleteHistoryEntryStorage,
   getBrandKits,
+  getGallery,
   getHistory,
+  publishToGallery,
+  removeFromGallery as removeFromGalleryStorage,
   saveBrandKit as saveBrandKitStorage,
   saveHistoryEntry as saveHistoryEntryStorage,
+  toggleGalleryLike as toggleGalleryLikeStorage,
 } from "@/utils/local-storage";
 
 export const defaultFormValues: QRFormValues = {
@@ -89,6 +94,12 @@ type QRStore = {
     contrast: string;
     accent: string;
   }) => void;
+  gallery: GalleryEntry[];
+  publishCurrent: () => void;
+  toggleGalleryLike: (id: string) => void;
+  removeFromGallery: (id: string) => void;
+  refreshGallery: () => void;
+  restoreFromGallery: (entry: GalleryEntry) => void;
 };
 
 const templates: Record<
@@ -335,6 +346,7 @@ export const useQRStore = create<QRStore>((set, get) => ({
   selectedTemplate: undefined,
   history: [],
   brandKits: [],
+  gallery: [],
   setFormValues: (values) =>
     set((state) => ({ formValues: { ...state.formValues, ...values } })),
   setCustomization: (values) =>
@@ -421,5 +433,39 @@ export const useQRStore = create<QRStore>((set, get) => ({
         patternColor: palette.accent,
       },
     }));
+  },
+  publishCurrent: () => {
+    const state = get();
+    const entry: GalleryEntry = {
+      id: Date.now().toString(36),
+      name: state.formValues.title || "Untitled",
+      createdAt: new Date().toISOString(),
+      author: "You",
+      formValues: state.formValues,
+      customization: state.customization,
+      selectedTemplate: state.selectedTemplate,
+      likes: 0,
+      liked: false,
+    };
+    const updated = publishToGallery(entry);
+    set({ gallery: updated });
+  },
+  toggleGalleryLike: (id: string) => {
+    const updated = toggleGalleryLikeStorage(id);
+    set({ gallery: updated });
+  },
+  removeFromGallery: (id: string) => {
+    const updated = removeFromGalleryStorage(id);
+    set({ gallery: updated });
+  },
+  refreshGallery: () => {
+    set({ gallery: getGallery() });
+  },
+  restoreFromGallery: (entry: GalleryEntry) => {
+    set({
+      formValues: entry.formValues,
+      customization: entry.customization,
+      selectedTemplate: entry.selectedTemplate,
+    });
   },
 }));

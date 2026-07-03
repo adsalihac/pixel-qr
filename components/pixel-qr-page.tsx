@@ -8,6 +8,7 @@ import { HistoryPanel } from "@/components/history-panel";
 import { BrandKitPanel } from "@/components/brand-kit-panel";
 import { BulkGenerator } from "@/components/bulk-generator";
 import { ApiSection as ApiSectionPanel } from "@/components/api-section";
+import { CommunityGallery } from "@/components/community-gallery";
 import { colors } from "@/constants/theme";
 
 const templates = [
@@ -278,6 +279,7 @@ export function PixelQRPage() {
       <AppHeader />
       <HeroSection />
       <QRGenerator />
+      <GallerySection />
       <TemplatesSection />
       <HistorySection />
       <BrandKitsSection />
@@ -388,6 +390,30 @@ function BrandKitsSection() {
           body="Save your color schemes and styles as brand kits for consistent branding."
         />
         <BrandKitPanel />
+      </View>
+    </SectionShell>
+  );
+}
+
+function GallerySection() {
+  return (
+    <SectionShell
+      id="gallery"
+      style={{
+        backgroundColor: colors.background,
+        borderTopWidth: 4,
+        borderBottomWidth: 4,
+        borderColor: "#000",
+        paddingVertical: 60,
+      }}
+    >
+      <View style={{ gap: 32 }}>
+        <SectionHeading
+          eyebrow="Gallery"
+          title="Get inspired by the community."
+          body="Browse designs, like your favorites, and publish your own QR creations."
+        />
+        <CommunityGallery />
       </View>
     </SectionShell>
   );

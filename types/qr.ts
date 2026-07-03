@@ -136,3 +136,16 @@ export type BulkEntry = {
   content: string;
   payload: string;
 };
+
+export type GalleryEntry = {
+  id: string;
+  name: string;
+  createdAt: string;
+  author: string;
+  formValues: QRFormValues;
+  customization: QRCustomization;
+  selectedTemplate?: TemplateId;
+  likes: number;
+  liked: boolean;
+  isExample?: boolean;
+};

@@ -1,4 +1,4 @@
-import { BrandKit, HistoryEntry } from "@/types/qr";
+import { BrandKit, GalleryEntry, HistoryEntry } from "@/types/qr";
 
 const HISTORY_KEY = "pixelqr_history";
 const BRAND_KITS_KEY = "pixelqr_brand_kits";
@@ -61,5 +61,35 @@ export function saveBrandKit(kit: BrandKit): BrandKit[] {
 export function deleteBrandKit(id: string): BrandKit[] {
   const list = getBrandKits().filter((k) => k.id !== id);
   write(BRAND_KITS_KEY, list);
+  return list;
+}
+
+const GALLERY_KEY = "pixelqr_gallery";
+
+export function getGallery(): GalleryEntry[] {
+  return read<GalleryEntry[]>(GALLERY_KEY, []);
+}
+
+export function publishToGallery(entry: GalleryEntry): GalleryEntry[] {
+  const list = getGallery();
+  list.unshift(entry);
+  write(GALLERY_KEY, list);
+  return list;
+}
+
+export function removeFromGallery(id: string): GalleryEntry[] {
+  const list = getGallery().filter((e) => e.id !== id);
+  write(GALLERY_KEY, list);
+  return list;
+}
+
+export function toggleGalleryLike(id: string): GalleryEntry[] {
+  const list = getGallery().map((e) => {
+    if (e.id === id) {
+      return { ...e, liked: !e.liked, likes: e.liked ? e.likes - 1 : e.likes + 1 };
+    }
+    return e;
+  });
+  write(GALLERY_KEY, list);
   return list;
 }
