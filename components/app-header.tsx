@@ -1,7 +1,6 @@
 import { Linking, Pressable, Text, View, useWindowDimensions } from "react-native";
-import { colors, shadows } from "@/constants/theme";
+import { colors } from "@/constants/theme";
 import { SectionShell } from "@/components/ui";
-import { scrollToSection } from "@/utils/scroll-to-section";
 
 export function AppHeader() {
   const { width } = useWindowDimensions();
@@ -53,15 +52,7 @@ export function AppHeader() {
         </Pressable>
 
         {!isMobile && (
-          <View style={{ flexDirection: "row", gap: 8 }}>
-            <NavButton label="Generator" onPress={() => scrollToSection("generator")} />
-            <NavButton label="Templates" onPress={() => scrollToSection("templates")} />
-            <NavButton label="History" onPress={() => scrollToSection("history")} />
-            <NavButton label="Brand Kits" onPress={() => scrollToSection("brand-kits")} />
-            <NavButton label="Sequential" onPress={() => scrollToSection("sequential")} />
-            <NavButton label="Labels" onPress={() => scrollToSection("labels")} />
-            <NavButton label="Bulk" onPress={() => scrollToSection("bulk")} />
-            <NavButton label="API" onPress={() => scrollToSection("api")} />
+          <View style={{ flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
           </View>
         )}
 
@@ -100,36 +91,4 @@ export function AppHeader() {
   );
 }
 
-function NavButton({ label, onPress }: { label: string; onPress: () => void }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => ({
-        minHeight: 44,
-        paddingHorizontal: 14,
-        borderWidth: 3,
-        borderColor: "#000",
-        backgroundColor: colors.white,
-        justifyContent: "center",
-        transform: pressed
-          ? [{ translateX: 1 }, { translateY: 1 }]
-          : [{ translateX: 0 }, { translateY: 0 }],
-        transitionDuration: "100ms",
-        transitionProperty: "transform",
-      })}
-    >
-      <Text
-        selectable
-        style={{
-          color: colors.foreground,
-          fontWeight: "700",
-          fontSize: 11,
-          letterSpacing: 1.5,
-          textTransform: "uppercase",
-        }}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
+

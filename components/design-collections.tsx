@@ -12,308 +12,144 @@ export function DesignCollections() {
   const renameCollection = useQRStore((s) => s.renameCollection);
   const saveToHistory = useQRStore((s) => s.saveToHistory);
   const restoreFromHistory = useQRStore((s) => s.restoreFromHistory);
-  const deleteFromHistory = useQRStore((s) => s.deleteFromHistory);
-  const [name, setName] = useState("");
+  const [newName, setNewName] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [saveName, setSaveName] = useState("");
-  const [saveTarget, setSaveTarget] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
 
   useEffect(() => {
     refreshCollections();
   }, [refreshCollections]);
 
   const handleCreate = () => {
-    if (name.trim()) {
-      createCollection(name.trim());
-      setName("");
+    if (newName.trim()) {
+      createCollection(newName.trim());
+      setNewName("");
     }
   };
 
+  const handleDelete = (id: string) => {
+    deleteCollection(id);
+    if (expanded === id) setExpanded(null);
+  };
+
+  const handleRename = (id: string) => {
+    if (renameValue.trim()) {
+      renameCollection(id, renameValue.trim());
+      setRenaming(null);
+    }
+  };
+
+  if (collections.length === 0) {
+    return (
+      <Panel>
+        <View style={{ gap: 4 }}>
+          <Text selectable style={{ color: colors.foreground, fontWeight: "900", fontSize: 20, textTransform: "uppercase", letterSpacing: -0.5 }}>
+            Collections
+          </Text>
+          <Text selectable style={{ color: colors.foreground, fontWeight: "700", fontSize: 13, opacity: 0.6 }}>
+            Organize saved designs into folders.
+          </Text>
+        </View>
+        <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+          <View style={{ flex: 1 }}>
+            <Input value={newName} onChangeText={setNewName} placeholder="Collection name" />
+          </View>
+          <Button label="Create" onPress={handleCreate} />
+        </View>
+        <Text selectable style={{ color: colors.foreground, fontWeight: "700", fontSize: 12, opacity: 0.4, textAlign: "center" }}>
+          No collections yet. Create one to organize QR designs.
+        </Text>
+      </Panel>
+    );
+  }
+
   return (
     <Panel>
-      <View style={{ gap: 4 }}>
-        <Text
-          selectable
-          style={{
-            color: colors.foreground,
-            fontWeight: "900",
-            fontSize: 20,
-            textTransform: "uppercase",
-            letterSpacing: -0.5,
-          }}
-        >
-          Collections
-        </Text>
-        <Text
-          selectable
-          style={{
-            color: colors.foreground,
-            fontWeight: "700",
-            fontSize: 13,
-            opacity: 0.6,
-          }}
-        >
-          Organize designs into folders.
-        </Text>
-      </View>
-
-      <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-        <View style={{ flex: 1 }}>
-          <Input
-            value={name}
-            onChangeText={setName}
-            placeholder="Collection name"
-          />
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <View style={{ gap: 4 }}>
+          <Text selectable style={{ color: colors.foreground, fontWeight: "900", fontSize: 20, textTransform: "uppercase", letterSpacing: -0.5 }}>
+            Collections
+          </Text>
+          <Text selectable style={{ color: colors.foreground, fontWeight: "700", fontSize: 13, opacity: 0.6 }}>
+            {collections.length} collection{collections.length !== 1 ? "s" : ""}.
+          </Text>
         </View>
-        <Button label="Create" onPress={handleCreate} />
+        <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+          <View style={{ width: 140 }}>
+            <Input value={newName} onChangeText={setNewName} placeholder="New collection" />
+          </View>
+          <Button label="Create" onPress={handleCreate} />
+        </View>
       </View>
 
-      {collections.length === 0 ? (
-        <Text
-          selectable
-          style={{
-            color: colors.foreground,
-            fontWeight: "700",
-            fontSize: 12,
-            opacity: 0.4,
-            textAlign: "center",
-          }}
-        >
-          No collections yet. Create one to organize your designs.
-        </Text>
-      ) : (
-        <View style={{ gap: 8 }}>
-          {collections.map((collection) => (
-            <View
-              key={collection.id}
-              style={{
-                borderWidth: 3,
-                borderColor: "#000",
-                backgroundColor: colors.background,
-                overflow: "hidden",
-              }}
-            >
+      <View style={{ gap: 10 }}>
+        {collections.map((collection) => (
+          <View key={collection.id} style={{ borderWidth: 3, borderColor: "#000", backgroundColor: colors.background }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, padding: 10 }}>
               <Pressable
-                onPress={() =>
-                  setExpanded(expanded === collection.id ? null : collection.id)
-                }
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: 10,
-                }}
+                onPress={() => setExpanded(expanded === collection.id ? null : collection.id)}
+                style={{ width: 30, height: 30, borderWidth: 3, borderColor: "#000", backgroundColor: colors.secondary, alignItems: "center", justifyContent: "center" }}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text
-                    selectable
-                    style={{
-                      color: colors.foreground,
-                      fontWeight: "900",
-                      fontSize: 11,
-                      textTransform: "uppercase",
-                    }}
-                  >
+                <Text selectable style={{ color: "#000", fontWeight: "900", fontSize: 14 }}>
+                  {expanded === collection.id ? "−" : "+"}
+                </Text>
+              </Pressable>
+              {renaming === collection.id ? (
+                <View style={{ flex: 1, flexDirection: "row", gap: 6, alignItems: "center" }}>
+                  <View style={{ flex: 1 }}><Input value={renameValue} onChangeText={setRenameValue} /></View>
+                  <Button label="Save" size="sm" onPress={() => handleRename(collection.id)} />
+                </View>
+              ) : (
+                <Pressable onPress={() => { setRenaming(collection.id); setRenameValue(collection.name); }}>
+                  <Text selectable style={{ color: "#000", fontWeight: "900", fontSize: 14, textTransform: "uppercase" }}>
                     {collection.name}
                   </Text>
-                  <Text
-                    selectable
-                    style={{
-                      color: colors.foreground,
-                      fontWeight: "700",
-                      fontSize: 10,
-                      opacity: 0.4,
-                    }}
-                  >
-                    {collection.entries.length}
-                  </Text>
-                </View>
-                <Pressable
-                  onPress={() => deleteCollection(collection.id)}
-                  style={({ pressed }) => ({
-                    borderWidth: 2,
-                    borderColor: "#000",
-                    backgroundColor: colors.white,
-                    paddingHorizontal: 8,
-                    paddingVertical: 4,
-                    opacity: pressed ? 0.7 : 1,
-                  })}
-                >
-                  <Text
-                    selectable
-                    style={{
-                      color: colors.accent,
-                      fontWeight: "900",
-                      fontSize: 9,
-                      letterSpacing: 1,
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Del
-                  </Text>
                 </Pressable>
+              )}
+              <Text selectable style={{ color: "#000", fontWeight: "700", fontSize: 10, opacity: 0.4, marginLeft: "auto" }}>
+                {collection.entries.length} QR
+              </Text>
+              <Pressable onPress={() => handleDelete(collection.id)} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, paddingHorizontal: 6 })}>
+                <Text selectable style={{ color: colors.accent, fontWeight: "900", fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                  Del
+                </Text>
               </Pressable>
-
-              {expanded === collection.id ? (
-                <View
-                  style={{
-                    borderTopWidth: 2,
-                    borderTopColor: "#000",
-                    padding: 10,
-                    gap: 8,
-                  }}
-                >
-                  {/* Save current to this collection */}
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      gap: 6,
-                      alignItems: "center",
-                    }}
-                  >
-                    <View style={{ flex: 1 }}>
-                      <Input
-                        value={saveTarget === collection.id ? saveName : ""}
-                        onChangeText={(v) => {
-                          setSaveTarget(collection.id);
-                          setSaveName(v);
-                        }}
-                        placeholder="Name this design"
-                      />
-                    </View>
-                    <Button
-                      label="Save here"
-                      size="sm"
-                      onPress={() => {
-                        if (saveName.trim() && saveTarget === collection.id) {
-                          saveToHistory(saveName.trim(), collection.id);
-                          setSaveName("");
-                          setSaveTarget(null);
-                        }
-                      }}
-                    />
-                  </View>
-
-                  {collection.entries.length === 0 ? (
-                    <Text
-                      selectable
-                      style={{
-                        color: colors.foreground,
-                        fontWeight: "700",
-                        fontSize: 10,
-                        opacity: 0.4,
-                        textAlign: "center",
-                      }}
-                    >
-                      Empty collection
-                    </Text>
-                  ) : (
-                    collection.entries.map((entry) => (
-                      <View
-                        key={entry.id}
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 8,
-                          borderWidth: 2,
-                          borderColor: "#000",
-                          padding: 8,
-                          backgroundColor: colors.white,
-                        }}
-                      >
-                        <View
-                          style={{
-                            width: 24,
-                            height: 24,
-                            backgroundColor:
-                              entry.customization.foregroundColor,
-                            borderWidth: 2,
-                            borderColor: "#000",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Text
-                            selectable
-                            style={{
-                              color: "#fff",
-                              fontWeight: "900",
-                              fontSize: 9,
-                            }}
-                          >
-                            {entry.formValues.kind.slice(0, 2).toUpperCase()}
-                          </Text>
-                        </View>
-                        <View style={{ flex: 1 }}>
-                          <Text
-                            selectable
-                            style={{
-                              color: colors.foreground,
-                              fontWeight: "900",
-                              fontSize: 11,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            {entry.name}
-                          </Text>
-                        </View>
-                        <Pressable
-                          onPress={() => restoreFromHistory(entry)}
-                          style={({ pressed }) => ({
-                            borderWidth: 2,
-                            borderColor: "#000",
-                            backgroundColor: colors.secondary,
-                            paddingHorizontal: 8,
-                            paddingVertical: 4,
-                            opacity: pressed ? 0.7 : 1,
-                          })}
-                        >
-                          <Text
-                            selectable
-                            style={{
-                              color: colors.foreground,
-                              fontWeight: "900",
-                              fontSize: 8,
-                              letterSpacing: 1,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Open
-                          </Text>
-                        </Pressable>
-                        <Pressable
-                          onPress={() => deleteFromHistory(entry.id)}
-                          style={({ pressed }) => ({
-                            borderWidth: 2,
-                            borderColor: "#000",
-                            backgroundColor: colors.white,
-                            paddingHorizontal: 6,
-                            paddingVertical: 4,
-                            opacity: pressed ? 0.7 : 1,
-                          })}
-                        >
-                          <Text
-                            selectable
-                            style={{
-                              color: colors.accent,
-                              fontWeight: "900",
-                              fontSize: 8,
-                              letterSpacing: 1,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Del
-                          </Text>
-                        </Pressable>
-                      </View>
-                    ))
-                  )}
-                </View>
-              ) : null}
             </View>
-          ))}
-        </View>
-      )}
+
+            {expanded === collection.id && collection.entries.length > 0 ? (
+              <View style={{ borderTopWidth: 3, borderColor: "#000", padding: 10, gap: 8 }}>
+                {collection.entries.map((entry) => (
+                  <View key={entry.id} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <View style={{ width: 28, height: 28, borderWidth: 2, borderColor: "#000", backgroundColor: entry.customization.foregroundColor, alignItems: "center", justifyContent: "center" }}>
+                      <Text selectable style={{ color: "#fff", fontWeight: "900", fontSize: 10 }}>
+                        {entry.formValues.kind.slice(0, 2).toUpperCase()}
+                      </Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text selectable style={{ color: "#000", fontWeight: "900", fontSize: 12, textTransform: "uppercase" }}>{entry.name}</Text>
+                      <Text selectable style={{ color: "#000", fontWeight: "700", fontSize: 10, opacity: 0.4 }} numberOfLines={1}>
+                        {entry.formValues.content.slice(0, 30)}
+                      </Text>
+                    </View>
+                    <Pressable onPress={() => restoreFromHistory(entry)} style={({ pressed }) => ({ borderWidth: 2, borderColor: "#000", backgroundColor: colors.secondary, paddingHorizontal: 8, paddingVertical: 4, opacity: pressed ? 0.7 : 1 })}>
+                      <Text selectable style={{ color: "#000", fontWeight: "900", fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>
+                        Open
+                      </Text>
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            ) : expanded === collection.id ? (
+              <View style={{ borderTopWidth: 3, borderColor: "#000", padding: 16 }}>
+                <Text selectable style={{ color: "#000", fontWeight: "700", fontSize: 11, opacity: 0.4, textAlign: "center" }}>
+                  Empty collection. Save a QR with this collection selected.
+                </Text>
+              </View>
+            ) : null}
+          </View>
+        ))}
+      </View>
     </Panel>
   );
 }

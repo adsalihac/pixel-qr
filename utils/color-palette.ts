@@ -83,7 +83,7 @@ export function generatePalettes(seedHex: string): ColorPalette[] {
 
 function complementary(h: number, s: number, l: number): string[] {
   return [
-    rgbToHex(rgbToHsl(h, s, l).r, rgbToHsl(h, s, l).g, rgbToHsl(h, s, l).b),
+    rgbToHex(hslToRgb(h, s, l).r, hslToRgb(h, s, l).g, hslToRgb(h, s, l).b),
     ...[1, 2, 3].map((i) => {
       const h2 = (h + 180) % 360;
       const l2 = Math.max(0.15, Math.min(0.85, l + (i - 1) * 0.12));

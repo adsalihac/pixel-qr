@@ -1,103 +1,85 @@
-import { useMemo, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, Text, View } from "react-native";
 import { colors } from "@/constants/theme";
-import { FieldLabel, Input, Panel } from "@/components/ui";
+import { FieldLabel, Input } from "@/components/ui";
 import { useQRStore } from "@/store/qr-store";
 import { generatePalettes, ColorPalette } from "@/utils/color-palette";
 
 export function ColorPaletteGenerator() {
-  const customization = useQRStore((s) => s.customization);
+  const [seed, setSeed] = useState("#111827");
+  const [palettes, setPalettes] = useState<ColorPalette[]>([]);
   const setCustomization = useQRStore((s) => s.setCustomization);
-  const [seed, setSeed] = useState(customization.foregroundColor);
 
-  const palettes = useMemo(() => generatePalettes(seed), [seed]);
+  const handleGenerate = () => {
+    const result = generatePalettes(seed);
+    setPalettes(result);
+  };
 
-  const handleApply = (palette: ColorPalette) => {
-    if (palette.colors.length >= 2) {
-      setCustomization({
-        foregroundColor: palette.colors[0],
-        backgroundColor: "#ffffff",
-        gradientColor: palette.colors[1],
-      });
-    }
+  const applyColor = (hex: string) => {
+    setCustomization({ foregroundColor: hex });
   };
 
   return (
     <View style={{ gap: 10 }}>
+      <View style={{ gap: 6 }}>
+        <FieldLabel>Color Palette Generator</FieldLabel>
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "700",
+            fontSize: 11,
+            opacity: 0.5,
+          }}
+        >
+          Pick a seed color to generate harmonious palettes.
+        </Text>
+      </View>
+
       <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+        <View style={{ width: 44, height: 44, borderWidth: 3, borderColor: "#000", backgroundColor: seed }} />
         <View style={{ flex: 1 }}>
-          <Input
-            value={seed}
-            onChangeText={setSeed}
-            placeholder="#111827"
-          />
+          <Input value={seed} onChangeText={setSeed} placeholder="#111827" />
         </View>
         <Pressable
-          onPress={() => setSeed(customization.foregroundColor)}
-          style={{
-            width: 40,
-            height: 40,
+          onPress={handleGenerate}
+          style={({ pressed }) => ({
+            minHeight: 44,
+            paddingHorizontal: 14,
             borderWidth: 3,
             borderColor: "#000",
-            backgroundColor: customization.foregroundColor,
-          }}
-        />
+            backgroundColor: colors.secondary,
+            justifyContent: "center",
+            boxShadow: "3px 3px 0px 0px #000",
+            transform: pressed ? [{ translateX: 1 }, { translateY: 1 }] : [],
+          })}
+        >
+          <Text selectable style={{ color: "#000", fontWeight: "900", fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+            Generate
+          </Text>
+        </Pressable>
       </View>
 
       {palettes.length > 0 ? (
-        <View style={{ gap: 8 }}>
+        <View style={{ gap: 10 }}>
           {palettes.map((palette) => (
             <View key={palette.name} style={{ gap: 4 }}>
-              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                <Text
-                  selectable
-                  style={{
-                    color: colors.foreground,
-                    fontWeight: "900",
-                    fontSize: 10,
-                    letterSpacing: 1.5,
-                    textTransform: "uppercase",
-                    opacity: 0.6,
-                  }}
-                >
-                  {palette.name}
-                </Text>
-                <Pressable
-                  onPress={() => handleApply(palette)}
-                  style={({ pressed }) => ({
-                    borderWidth: 2,
-                    borderColor: "#000",
-                    backgroundColor: colors.secondary,
-                    paddingHorizontal: 8,
-                    paddingVertical: 3,
-                    opacity: pressed ? 0.7 : 1,
-                  })}
-                >
-                  <Text
-                    selectable
-                    style={{
-                      color: colors.foreground,
-                      fontWeight: "900",
-                      fontSize: 8,
-                      letterSpacing: 1,
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Apply
-                  </Text>
-                </Pressable>
-              </View>
+              <Text selectable style={{ color: "#000", fontWeight: "900", fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                {palette.name}
+              </Text>
               <View style={{ flexDirection: "row", gap: 4 }}>
-                {palette.colors.map((hex, i) => (
-                  <View
-                    key={i}
-                    style={{
+                {palette.colors.map((hex) => (
+                  <Pressable
+                    key={hex}
+                    onPress={() => applyColor(hex)}
+                    style={({ pressed }) => ({
                       width: 32,
                       height: 32,
                       borderWidth: 2,
                       borderColor: "#000",
                       backgroundColor: hex,
-                    }}
+                      opacity: pressed ? 0.7 : 1,
+                    })}
                   />
                 ))}
               </View>

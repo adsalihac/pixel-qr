@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Image, Platform, Text, View } from "react-native";
+import { Image, Platform, Pressable, Text, View } from "react-native";
 import QRCodeLib from "qrcode";
 import { colors } from "@/constants/theme";
 import { ExportActions } from "@/components/export-actions";
@@ -7,6 +7,7 @@ import { ScanSafetyScore } from "@/components/scan-safety-score";
 import { QRAnalysis } from "@/components/qr-analysis";
 import { BeautifiedQrCode, AnimatedQrSvg } from "@/components/beautified-qr";
 import { Button } from "@/components/ui";
+import { UndoRedoBar } from "@/components/undo-redo-bar";
 import { useQRStore } from "@/store/qr-store";
 import { DotStyle, EyeStyle, GradientMode, QrBeautification, TemplateVisualStyle } from "@/types/qr";
 import { defaultBeautification } from "@/store/qr-store";
@@ -16,6 +17,8 @@ import { getTemplateVisualStyle } from "@/utils/template-style";
 import { downloadPng } from "@/utils/export-qr";
 import { downloadStyledPng } from "@/utils/styled-export";
 import { toPng } from "html-to-image";
+import { encodeShareLink } from "@/utils/share-link";
+import { exportDesign, importDesign } from "@/utils/export-import-design";
 
 export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
   const formValues = useQRStore((state) => state.formValues);
@@ -27,7 +30,9 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
   const templateStyle = getTemplateVisualStyle(selectedTemplate);
   const qrSize = Math.min(customization.size, compact ? 210 : 280);
   const previewRef = useRef<any>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [plainDataUrl, setPlainDataUrl] = useState("");
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const ecl = customization.errorCorrectionLevel;
   const mp = customization.maskPattern === "auto" ? undefined : Number(customization.maskPattern);
@@ -122,6 +127,39 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
     URL.revokeObjectURL(url);
   }, [payload, customization, beautification.animationSpeed]);
 
+  const handleCopyShareLink = () => {
+    const link = encodeShareLink(formValues, customization, selectedTemplate);
+    if (link) {
+      navigator.clipboard.writeText(link).then(() => {
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 2000);
+      });
+    }
+  };
+
+  const handleExportDesign = () => {
+    exportDesign(
+      formValues.title || "pixelqr-design",
+      formValues,
+      customization,
+      beautification,
+      selectedTemplate,
+    );
+  };
+
+  const handleImportDesign = async (e: any) => {
+    const file = e.target?.files?.[0];
+    if (!file) return;
+    const result = await importDesign(file);
+    if (result) {
+      useQRStore.getState().pushUndo();
+      useQRStore.getState().setFormValues(result.formValues);
+      useQRStore.getState().setCustomization(result.customization);
+      useQRStore.getState().setBeautification(result.beautification);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <View
       style={{
@@ -133,30 +171,33 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
         boxShadow: "10px 10px 0px 0px #000",
       }}
     >
-      <View style={{ gap: 4 }}>
-        <Text
-          selectable
-          style={{
-            color: colors.foreground,
-            fontWeight: "900",
-            fontSize: compact ? 16 : 20,
-            textTransform: "uppercase",
-            letterSpacing: -0.5,
-          }}
-        >
-          Live Preview
-        </Text>
-        <Text
-          selectable
-          style={{
-            color: colors.foreground,
-            fontWeight: "700",
-            fontSize: 13,
-            opacity: 0.6,
-          }}
-        >
-          Export-ready, branded, and checked for reliable scanning.
-        </Text>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <View style={{ gap: 4 }}>
+          <Text
+            selectable
+            style={{
+              color: colors.foreground,
+              fontWeight: "900",
+              fontSize: compact ? 16 : 20,
+              textTransform: "uppercase",
+              letterSpacing: -0.5,
+            }}
+          >
+            Live Preview
+          </Text>
+          <Text
+            selectable
+            style={{
+              color: colors.foreground,
+              fontWeight: "700",
+              fontSize: 13,
+              opacity: 0.6,
+            }}
+          >
+            Export-ready, branded, and checked for reliable scanning.
+          </Text>
+        </View>
+        <UndoRedoBar />
       </View>
 
       <View ref={previewRef} style={{ alignSelf: "center" }}>
@@ -256,6 +297,32 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
 
       {!compact ? (
         <>
+          {/* Share & Export/Import row */}
+          <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+            <Button
+              label={linkCopied ? "Link Copied!" : "Copy Share Link"}
+              variant="outline"
+              onPress={handleCopyShareLink}
+            />
+            <Button
+              label="Export .qrdesign"
+              variant="outline"
+              onPress={handleExportDesign}
+            />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".qrdesign"
+              style={{ display: "none" }}
+              onChange={handleImportDesign}
+            />
+            <Button
+              label="Import .qrdesign"
+              variant="outline"
+              onPress={() => fileInputRef.current?.click()}
+            />
+          </View>
+
           <ScanSafetyScore score={safety.score} warnings={safety.warnings} />
           <QRAnalysis
             payload={payload}
@@ -415,7 +482,6 @@ function StyledTemplatePreview({
             {subtitle || "Listen on Spotify"}
           </Text>
         </View>
-        {/* Decorative bars */}
         {[0, 1, 2, 3].map((i) => (
           <View
             key={i}
@@ -470,7 +536,6 @@ function StyledTemplatePreview({
           boxShadow: "8px 8px 0px 0px #000",
         }}
       >
-        {/* Decorative rings */}
         <View style={{ position: "absolute", top: -50, right: -30, width: 140, height: 140, borderRadius: 999, borderWidth: 6, borderColor: "#db2777", opacity: 0.2 }} />
         <View style={{ position: "absolute", bottom: -40, left: -20, width: 100, height: 100, borderRadius: 999, borderWidth: 6, borderColor: "#db2777", opacity: 0.15 }} />
         <Text selectable style={{ color: "#db2777", fontWeight: "900", fontSize: 12, letterSpacing: 4 }}>SAVE THE DATE</Text>

@@ -5,6 +5,8 @@ import { ColorPicker } from "@/components/color-picker";
 import { GradientPicker } from "@/components/gradient-picker";
 import { LogoUploader } from "@/components/logo-uploader";
 import { BeautifyOptions } from "@/components/beautify-options";
+import { SurpriseMe } from "@/components/surprise-me";
+import { ColorPaletteGenerator } from "@/components/color-palette-generator";
 import {
   Button,
   FieldLabel,
@@ -370,6 +372,18 @@ export function QRCustomizationPanel() {
           </View>
         </View>
       ) : null}
+
+      <View
+        style={{
+          borderTopWidth: 3,
+          borderTopColor: "#000",
+          paddingTop: 14,
+          gap: 14,
+        }}
+      >
+        <SurpriseMe />
+        <ColorPaletteGenerator />
+      </View>
 
       <View
         style={{

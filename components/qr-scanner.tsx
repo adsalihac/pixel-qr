@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Platform, Text, View } from "react-native";
 import { colors } from "@/constants/theme";
 import { Button, FieldLabel, Input } from "@/components/ui";
+import { useQRStore } from "@/store/qr-store";
 
 type ScanResult = { data: string } | null;
 
@@ -12,6 +13,8 @@ export function QRScanner() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animRef = useRef<number>(0);
+  const setFormValues = useQRStore((s) => s.setFormValues);
+  const pushUndo = useQRStore((s) => s.pushUndo);
 
   const stopCamera = useCallback(() => {
     cancelAnimationFrame(animRef.current);
@@ -202,17 +205,26 @@ export function QRScanner() {
             onChangeText={setResult}
             multiline
           />
-          <Text
-            selectable
-            style={{
-              color: colors.foreground,
-              fontWeight: "700",
-              fontSize: 10,
-              opacity: 0.4,
-            }}
-          >
-            Copy or use this content in the form above.
-          </Text>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <Button
+              label="Use in Form"
+              variant="primary"
+              onPress={() => {
+                pushUndo();
+                setFormValues({ content: result });
+                setResult("");
+                stopCamera();
+              }}
+            />
+            <Button
+              label="Discard"
+              variant="outline"
+              onPress={() => {
+                setResult("");
+                stopCamera();
+              }}
+            />
+          </View>
         </View>
       ) : null}
 

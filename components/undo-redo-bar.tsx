@@ -3,22 +3,20 @@ import { colors } from "@/constants/theme";
 import { useQRStore } from "@/store/qr-store";
 
 export function UndoRedoBar() {
-  const undoStack = useQRStore((s) => s.undoStack);
-  const redoStack = useQRStore((s) => s.redoStack);
   const undo = useQRStore((s) => s.undo);
   const redo = useQRStore((s) => s.redo);
+  const undoStack = useQRStore((s) => s.undoStack);
+  const redoStack = useQRStore((s) => s.redoStack);
 
   return (
-    <View style={{ flexDirection: "row", gap: 6 }}>
+    <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
       <UndoRedoButton
         label="Undo"
-        shortcut="⌘Z"
         disabled={undoStack.length === 0}
         onPress={undo}
       />
       <UndoRedoButton
         label="Redo"
-        shortcut="⌘⇧Z"
         disabled={redoStack.length === 0}
         onPress={redo}
       />
@@ -28,12 +26,10 @@ export function UndoRedoBar() {
 
 function UndoRedoButton({
   label,
-  shortcut,
   disabled,
   onPress,
 }: {
   label: string;
-  shortcut: string;
   disabled: boolean;
   onPress: () => void;
 }) {
@@ -41,15 +37,16 @@ function UndoRedoButton({
     <Pressable
       onPress={disabled ? undefined : onPress}
       style={({ pressed }) => ({
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 6,
+        minHeight: 32,
+        paddingHorizontal: 10,
         borderWidth: 3,
         borderColor: "#000",
-        backgroundColor: disabled ? "#e5e5e5" : colors.white,
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        opacity: disabled ? 0.5 : pressed ? 0.7 : 1,
+        backgroundColor: disabled ? colors.muted : colors.white,
+        justifyContent: "center",
+        opacity: disabled ? 0.4 : pressed ? 0.7 : 1,
+        boxShadow: disabled ? undefined : "2px 2px 0px 0px #000",
+        transform: pressed ? [{ translateX: 1 }, { translateY: 1 }] : [],
+        transitionDuration: "100ms",
       })}
     >
       <Text
@@ -57,23 +54,12 @@ function UndoRedoButton({
         style={{
           color: colors.foreground,
           fontWeight: "900",
-          fontSize: 11,
+          fontSize: 10,
           letterSpacing: 1,
           textTransform: "uppercase",
         }}
       >
         {label}
-      </Text>
-      <Text
-        selectable
-        style={{
-          color: colors.foreground,
-          fontWeight: "700",
-          fontSize: 9,
-          opacity: 0.4,
-        }}
-      >
-        {shortcut}
       </Text>
     </Pressable>
   );

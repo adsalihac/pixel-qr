@@ -6,19 +6,23 @@ import { useQRStore } from "@/store/qr-store";
 
 export function HistoryPanel() {
   const history = useQRStore((state) => state.history);
+  const collections = useQRStore((state) => state.collections);
   const refreshHistory = useQRStore((state) => state.refreshHistory);
+  const refreshCollections = useQRStore((state) => state.refreshCollections);
   const saveToHistory = useQRStore((state) => state.saveToHistory);
   const restoreFromHistory = useQRStore((state) => state.restoreFromHistory);
   const deleteFromHistory = useQRStore((state) => state.deleteFromHistory);
   const [name, setName] = useState("");
+  const [selectedCollection, setSelectedCollection] = useState("");
 
   useEffect(() => {
     refreshHistory();
-  }, [refreshHistory]);
+    refreshCollections();
+  }, [refreshHistory, refreshCollections]);
 
   const handleSave = () => {
     if (name.trim()) {
-      saveToHistory(name.trim());
+      saveToHistory(name.trim(), selectedCollection || undefined);
       setName("");
     }
   };
@@ -51,14 +55,21 @@ export function HistoryPanel() {
             Save your QR configurations to reuse later.
           </Text>
         </View>
-        <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-          <View style={{ flex: 1 }}>
+        <View style={{ flexDirection: "row", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <View style={{ flex: 1, minWidth: 120 }}>
             <Input
               value={name}
               onChangeText={setName}
               placeholder="Name this QR"
             />
           </View>
+          {collections.length > 0 ? (
+            <CollectionPicker
+              collections={collections}
+              selected={selectedCollection}
+              onSelect={setSelectedCollection}
+            />
+          ) : null}
           <Button label="Save" onPress={handleSave} />
         </View>
         <Text
@@ -114,7 +125,7 @@ export function HistoryPanel() {
             {history.length !== 1 ? "s" : ""}.
           </Text>
         </View>
-        <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+        <View style={{ flexDirection: "row", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           <View style={{ width: 140 }}>
             <Input
               value={name}
@@ -122,6 +133,13 @@ export function HistoryPanel() {
               placeholder="Name this QR"
             />
           </View>
+          {collections.length > 0 ? (
+            <CollectionPicker
+              collections={collections}
+              selected={selectedCollection}
+              onSelect={setSelectedCollection}
+            />
+          ) : null}
           <Button label="Save" onPress={handleSave} />
         </View>
       </View>
@@ -239,5 +257,83 @@ export function HistoryPanel() {
         ))}
       </View>
     </Panel>
+  );
+}
+
+function CollectionPicker({
+  collections,
+  selected,
+  onSelect,
+}: {
+  collections: { id: string; name: string }[];
+  selected: string;
+  onSelect: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const current = collections.find((c) => c.id === selected);
+
+  return (
+    <View style={{ position: "relative", zIndex: 10 }}>
+      <Pressable
+        onPress={() => setOpen(!open)}
+        style={({ pressed }) => ({
+          minHeight: 46,
+          paddingHorizontal: 10,
+          borderWidth: 3,
+          borderColor: "#000",
+          backgroundColor: colors.white,
+          justifyContent: "center",
+          opacity: pressed ? 0.7 : 1,
+        })}
+      >
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "700",
+            fontSize: 10,
+            letterSpacing: 1,
+            textTransform: "uppercase",
+          }}
+        >
+          {current ? current.name : "Folder"}
+        </Text>
+      </Pressable>
+      {open ? (
+        <View
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            right: 0,
+            borderWidth: 3,
+            borderColor: "#000",
+            backgroundColor: colors.white,
+            zIndex: 20,
+            marginTop: 2,
+          }}
+        >
+          <Pressable
+            onPress={() => { onSelect(""); setOpen(false); }}
+            style={{ paddingHorizontal: 10, paddingVertical: 8, borderBottomWidth: 2, borderBottomColor: "#000" }}
+          >
+            <Text selectable style={{ fontWeight: "700", fontSize: 10, letterSpacing: 1, textTransform: "uppercase", opacity: selected === "" ? 1 : 0.5 }}>
+              No folder
+            </Text>
+          </Pressable>
+          {collections.map((c) => (
+            <Pressable
+              key={c.id}
+              onPress={() => { onSelect(c.id); setOpen(false); }}
+              style={{ paddingHorizontal: 10, paddingVertical: 8, borderBottomWidth: 2, borderBottomColor: "#000" }}
+            >
+              <Text selectable style={{ fontWeight: "700", fontSize: 10, letterSpacing: 1, textTransform: "uppercase", opacity: selected === c.id ? 1 : 0.5 }}>
+                {c.name}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+    </View>
   );
 }

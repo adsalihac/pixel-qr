@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Linking, ScrollView, Text, View } from "react-native";
 import { AppHeader } from "@/components/app-header";
 import { HeroSection } from "@/components/hero-section";
@@ -10,7 +11,13 @@ import { BulkGenerator } from "@/components/bulk-generator";
 import { SequentialGenerator } from "@/components/sequential-generator";
 import { LabelSheetGenerator } from "@/components/label-sheet-generator";
 import { ApiSection as ApiSectionPanel } from "@/components/api-section";
+import { DailyInspiration } from "@/components/daily-inspiration";
+import { DesignCollections } from "@/components/design-collections";
+import { VersionSnapshots } from "@/components/version-snapshots";
+import { OnboardingWizard } from "@/components/onboarding-wizard";
 import { colors } from "@/constants/theme";
+import { useQRStore } from "@/store/qr-store";
+import { decodeShareLink } from "@/utils/share-link";
 
 const templates = [
   {
@@ -461,25 +468,55 @@ const features = [
 ] as const;
 
 export function PixelQRPage() {
+  const [onboardingVisible, setOnboardingVisible] = useState(false);
+  const onboardingDone = useQRStore((s) => s.onboardingDone);
+  const setFormValues = useQRStore((s) => s.setFormValues);
+  const setCustomization = useQRStore((s) => s.setCustomization);
+
+  useEffect(() => {
+    const done = localStorage.getItem("pixelqr_onboarding_done") === "true";
+    if (!done) {
+      setOnboardingVisible(true);
+    }
+    // Check for shared design link
+    if (typeof window !== "undefined" && window.location.hash) {
+      const decoded = decodeShareLink(window.location.hash);
+      if (decoded) {
+        setFormValues(decoded.formValues);
+        setCustomization(decoded.customization);
+        if (decoded.selectedTemplate) {
+          useQRStore.getState().applyTemplate(decoded.selectedTemplate);
+        }
+        window.location.hash = "";
+      }
+    }
+  }, []);
+
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={{ paddingBottom: 24 }}
-    >
-      <AppHeader />
-      <HeroSection />
-      <QRGenerator />
-      <TemplatesSection />
-      <HistorySection />
-      <BrandKitsSection />
-      <SequentialSection />
-      <LabelSheetSection />
-      <BulkSection />
-      <ApiDocsSection />
-      <FeaturesSection />
-      <Footer />
-    </ScrollView>
+    <>
+      {onboardingVisible && !onboardingDone ? <OnboardingWizard /> : null}
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={{ flex: 1, backgroundColor: colors.background }}
+        contentContainerStyle={{ paddingBottom: 24 }}
+      >
+        <AppHeader />
+        <HeroSection />
+        <DailyInspirationSection />
+        <QRGenerator />
+        <TemplatesSection />
+        <HistorySection />
+        <CollectionSection />
+        <SnapshotSection />
+        <BrandKitsSection />
+        <SequentialSection />
+        <LabelSheetSection />
+        <BulkSection />
+        <ApiDocsSection />
+        <FeaturesSection />
+        <Footer />
+      </ScrollView>
+    </>
   );
 }
 
@@ -542,6 +579,23 @@ function SectionHeading({
   );
 }
 
+function DailyInspirationSection() {
+  return (
+    <SectionShell
+      id="inspiration"
+      style={{
+        backgroundColor: colors.secondary,
+        borderTopWidth: 4,
+        borderBottomWidth: 4,
+        borderColor: "#000",
+        paddingVertical: 40,
+      }}
+    >
+      <DailyInspiration />
+    </SectionShell>
+  );
+}
+
 function HistorySection() {
   return (
     <SectionShell
@@ -558,6 +612,53 @@ function HistorySection() {
           body="Save, browse, and restore previously generated QR codes."
         />
         <HistoryPanel />
+      </View>
+    </SectionShell>
+  );
+}
+
+function CollectionSection() {
+  return (
+    <SectionShell
+      id="collections"
+      style={{
+        backgroundColor: colors.muted,
+        borderTopWidth: 4,
+        borderBottomWidth: 4,
+        borderColor: "#000",
+        paddingVertical: 60,
+      }}
+    >
+      <View style={{ gap: 32 }}>
+        <SectionHeading
+          eyebrow="Collections"
+          title="Organize designs into folders."
+          body="Group related QR codes by project, campaign, or client."
+        />
+        <DesignCollections />
+      </View>
+    </SectionShell>
+  );
+}
+
+function SnapshotSection() {
+  return (
+    <SectionShell
+      id="snapshots"
+      style={{
+        backgroundColor: colors.background,
+        borderBottomWidth: 4,
+        borderColor: "#000",
+        paddingVertical: 60,
+      }}
+    >
+      <View style={{ gap: 32 }}>
+        <SectionHeading
+          eyebrow="Snapshots"
+          title="Version history, auto-saved."
+          body="Auto-saves every 30 seconds so you never lose a design iteration."
+        />
+        <VersionSnapshots />
       </View>
     </SectionShell>
   );

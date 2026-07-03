@@ -1,58 +1,94 @@
-import { useQRStore } from "@/store/qr-store";
-import { DotStyle, EyeStyle, FrameStyle, ShadowDepth, ErrorCorrectionLevel } from "@/types/qr";
+import { Text, View } from "react-native";
 import { Button } from "@/components/ui";
+import { useQRStore } from "@/store/qr-store";
+import {
+  DotStyle,
+  EyeStyle,
+  FrameStyle,
+  ShadowDepth,
+  ErrorCorrectionLevel,
+  MaskPattern,
+  GradientMode,
+} from "@/types/qr";
 
 const dotStyles: DotStyle[] = ["square", "rounded", "circle", "soft", "cross", "diamond", "leaf"];
 const eyeStyles: EyeStyle[] = ["square", "rounded", "circle", "leaf", "diamondAlt"];
 const frameStyles: FrameStyle[] = ["none", "simple", "label", "ticket", "custom", "bold", "double", "shadow"];
 const shadowDepths: ShadowDepth[] = ["small", "medium", "large"];
-const ecls: ErrorCorrectionLevel[] = ["L", "M", "Q", "H"];
+const eclLevels: ErrorCorrectionLevel[] = ["L", "M", "Q", "H"];
+const gradientModes: GradientMode[] = ["none", "linear"];
 
-const colorPairs = [
-  ["#111827", "#ffffff"], ["#5c0e07", "#fff1f2"], ["#0c4a6e", "#e0f2fe"],
-  ["#064e3b", "#ecfdf5"], ["#422006", "#fffbeb"], ["#1e1b4b", "#eef2ff"],
-  ["#431407", "#fff7ed"], ["#3b0764", "#faf5ff"], ["#292524", "#fafaf9"],
-  ["#172554", "#eff6ff"], ["#4c1d95", "#fdf4ff"], ["#020617", "#f0f9ff"],
-  ["#052e16", "#f0fdf4"], ["#5c0e07", "#fef2f2"], ["#164e63", "#ecfeff"],
-  ["#0f172a", "#f8fafc"], ["#18181b", "#fafafa"], ["#1c1917", "#f5f5f4"],
+const colorPalettes = [
+  ["#111827", "#2563eb", "#ffffff"],
+  ["#064e3b", "#10b981", "#ffffff"],
+  ["#431407", "#ea580c", "#fff7ed"],
+  ["#4c1d95", "#c084fc", "#faf5ff"],
+  ["#5c0e07", "#f43f5e", "#fff1f2"],
+  ["#0c4a6e", "#06b6d4", "#ecfeff"],
+  ["#1e1b4b", "#818cf8", "#eef2ff"],
+  ["#292524", "#d97706", "#fffbeb"],
+  ["#172554", "#3b82f6", "#eff6ff"],
+  ["#052e16", "#4ade80", "#f0fdf4"],
+  ["#0f172a", "#64748b", "#f8fafc"],
+  ["#422006", "#f59e0b", "#fefce8"],
 ];
 
-export function SurpriseMeButton() {
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+export function SurpriseMe() {
   const setCustomization = useQRStore((s) => s.setCustomization);
   const setFormValues = useQRStore((s) => s.setFormValues);
+  const setBeautification = useQRStore((s) => s.setBeautification);
   const formValues = useQRStore((s) => s.formValues);
 
   const handleSurprise = () => {
-    const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
-    const [fg, bg] = pick(colorPairs);
-    const hasGradient = Math.random() > 0.5;
-
+    const palette = pick(colorPalettes);
     setCustomization({
-      foregroundColor: fg,
-      backgroundColor: bg,
-      gradientMode: hasGradient ? "linear" : "none",
-      gradientColor: pick(colorPairs)[0],
+      foregroundColor: palette[0],
+      backgroundColor: palette[2],
+      gradientMode: pick(gradientModes),
+      gradientColor: palette[1],
       dotStyle: pick(dotStyles),
       eyeStyle: pick(eyeStyles),
-      innerEyeColor: pick(colorPairs)[0],
-      outerEyeColor: fg,
+      innerEyeColor: palette[1],
+      outerEyeColor: palette[0],
       frameStyle: pick(frameStyles),
       shadowDepth: pick(shadowDepths),
-      errorCorrectionLevel: pick(ecls),
-      size: [200, 220, 240, 260, 280][Math.floor(Math.random() * 5)],
-      padding: [12, 14, 16, 18, 20, 22][Math.floor(Math.random() * 6)],
-      cornerRadius: [0, 4, 8, 12, 16][Math.floor(Math.random() * 5)],
-      basicMode: false,
+      errorCorrectionLevel: pick(eclLevels),
+      maskPattern: "auto" as MaskPattern,
+      cornerRadius: pick([0, 4, 8, 12]),
+      padding: pick([12, 16, 18, 20, 24]),
     });
-
-    const titles = ["Fresh Look", "New Vibe", "Bold Move", "Smooth", "Sharp", "Clean", "Wild", "Sleek"];
-    setFormValues({
-      title: pick(titles).toUpperCase(),
-      subtitle: formValues.subtitle || "Scan to explore",
+    setBeautification({
+      enabled: Math.random() > 0.6,
+      moduleShape: pick(["square", "rounded", "circle", "diamond", "droplet"]),
+      pattern: pick(["none", "dots", "crosses", "diamonds", "circles"]),
+      patternColor: palette[1],
+      animationEnabled: false,
+      animationSpeed: 1,
     });
   };
 
   return (
-    <Button label="Surprise Me" variant="secondary" onPress={handleSurprise} />
+    <View style={{ gap: 8 }}>
+      <Button
+        label="Surprise Me ✦"
+        variant="secondary"
+        onPress={handleSurprise}
+      />
+      <Text
+        selectable
+        style={{
+          color: "#000",
+          fontWeight: "700",
+          fontSize: 10,
+          opacity: 0.4,
+        }}
+      >
+        Randomizes all styles for instant inspiration.
+      </Text>
+    </View>
   );
 }
