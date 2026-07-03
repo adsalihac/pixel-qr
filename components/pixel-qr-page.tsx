@@ -18,7 +18,7 @@ const templates = [
     format: "vCard profile",
     bestFor: "Business cards, portfolio pages, and sales leave-behinds.",
     fields: ["Name", "Role", "Phone", "Email", "Website"],
-    visualStyle: "business-card"
+    visualStyle: "business-card",
   },
   {
     id: "restaurant",
@@ -31,7 +31,7 @@ const templates = [
     format: "Digital menu",
     bestFor: "Table tents, takeaway cards, counter signage, and food posters.",
     fields: ["Header logo", "Menu link", "Table label", "CTA"],
-    visualStyle: "menu-poster"
+    visualStyle: "menu-poster",
   },
   {
     id: "instagram",
@@ -44,7 +44,7 @@ const templates = [
     format: "Social follow",
     bestFor: "Creator packaging, pop-up booths, events, and merch.",
     fields: ["Handle", "Profile link", "Creator name", "CTA"],
-    visualStyle: "social-card"
+    visualStyle: "social-card",
   },
   {
     id: "whatsapp",
@@ -57,7 +57,7 @@ const templates = [
     format: "Chat link",
     bestFor: "Support desks, booking counters, service teams, and sales.",
     fields: ["Phone", "Message", "Team name", "CTA"],
-    visualStyle: "chat-card"
+    visualStyle: "chat-card",
   },
   {
     id: "wifi",
@@ -70,7 +70,7 @@ const templates = [
     format: "Guest network",
     bestFor: "Hotels, cafes, offices, rentals, and reception areas.",
     fields: ["SSID", "Password", "Encryption", "Venue"],
-    visualStyle: "wifi-card"
+    visualStyle: "wifi-card",
   },
   {
     id: "payment",
@@ -83,7 +83,7 @@ const templates = [
     format: "Payment standee",
     bestFor: "Counters, invoices, stalls, checkout desks, and table payments.",
     fields: ["UPI ID", "Amount", "Merchant", "Pay apps"],
-    visualStyle: "payment-standee"
+    visualStyle: "payment-standee",
   },
   {
     id: "event",
@@ -96,7 +96,7 @@ const templates = [
     format: "Event access",
     bestFor: "Invites, venue posters, badges, agendas, and RSVP flows.",
     fields: ["RSVP link", "Map", "Date", "Agenda"],
-    visualStyle: "event-pass"
+    visualStyle: "event-pass",
   },
   {
     id: "app",
@@ -109,7 +109,7 @@ const templates = [
     format: "App install",
     bestFor: "Storefronts, product inserts, ads, and onboarding campaigns.",
     fields: ["Deep link", "iOS", "Android", "CTA"],
-    visualStyle: "app-card"
+    visualStyle: "app-card",
   },
   {
     id: "maps",
@@ -122,7 +122,7 @@ const templates = [
     format: "Maps location",
     bestFor: "Storefronts, event venues, service areas, and directories.",
     fields: ["Map pin", "Address", "Directions", "Hours"],
-    visualStyle: "map-card"
+    visualStyle: "map-card",
   },
   {
     id: "logoHeader",
@@ -135,7 +135,7 @@ const templates = [
     format: "Branded header",
     bestFor: "Premium posters, labels, package inserts, and brand cards.",
     fields: ["Header logo", "Brand name", "CTA", "Website"],
-    visualStyle: "brand-header"
+    visualStyle: "brand-header",
   },
   {
     id: "landing",
@@ -148,7 +148,7 @@ const templates = [
     format: "Campaign page",
     bestFor: "Launches, offers, lead forms, ads, and seasonal promos.",
     fields: ["Landing link", "Offer", "UTM tag", "CTA"],
-    visualStyle: "campaign-poster"
+    visualStyle: "campaign-poster",
   },
   {
     id: "coupon",
@@ -161,7 +161,7 @@ const templates = [
     format: "Coupon code",
     bestFor: "Receipts, flyers, shelf talkers, and retail promo cards.",
     fields: ["Code", "Discount", "Expiry", "Terms"],
-    visualStyle: "coupon-ticket"
+    visualStyle: "coupon-ticket",
   },
   {
     id: "review",
@@ -174,7 +174,7 @@ const templates = [
     format: "Review collector",
     bestFor: "Google review cards, counters, tables, and post-service prompts.",
     fields: ["Google link", "Logo", "Rating CTA", "Branch"],
-    visualStyle: "review-standee"
+    visualStyle: "review-standee",
   },
   {
     id: "email",
@@ -187,7 +187,7 @@ const templates = [
     format: "Pre-filled email",
     bestFor: "Quote requests, supplier forms, sales decks, and support cards.",
     fields: ["Email", "Subject", "Message", "Team"],
-    visualStyle: "email-card"
+    visualStyle: "email-card",
   },
   {
     id: "phone",
@@ -200,7 +200,7 @@ const templates = [
     format: "Tap-to-call",
     bestFor: "Bookings, service desks, emergency contacts, and local ads.",
     fields: ["Phone", "Country code", "Hours", "CTA"],
-    visualStyle: "call-card"
+    visualStyle: "call-card",
   },
   {
     id: "product",
@@ -213,58 +213,245 @@ const templates = [
     format: "Product support",
     bestFor: "Packaging, warranty cards, manuals, setup guides, and labels.",
     fields: ["SKU", "Manual", "Warranty", "Support"],
-    visualStyle: "product-label"
-  }
+    visualStyle: "product-label",
+  },
 ] as const;
 
 const features = [
-  ["Real-time QR preview", "Every change updates the preview immediately so teams can design without switching tools."],
-  ["Brand color customization", "Use calm defaults, precise hex colors, gradients, and reusable presets."],
-  ["Logo support", "Add a square brand mark with sizing guidance to protect the QR matrix."],
-  ["Scan-safe validation", "Contrast, logo size, and quiet-zone checks help keep finished codes reliable."],
-  ["PNG/SVG export", "Export clean assets for campaigns, signage, documents, and social posts."]
+  [
+    "Real-time QR preview",
+    "Every change updates the preview immediately so teams can design without switching tools.",
+  ],
+  [
+    "Brand color customization",
+    "Use calm defaults, precise hex colors, gradients, and reusable presets.",
+  ],
+  [
+    "Logo support",
+    "Add a square brand mark with sizing guidance to protect the QR matrix.",
+  ],
+  [
+    "Scan-safe validation",
+    "Contrast, logo size, and quiet-zone checks help keep finished codes reliable.",
+  ],
+  [
+    "PNG/SVG export",
+    "Export clean assets for campaigns, signage, documents, and social posts.",
+  ],
 ] as const;
 
 export function PixelQRPage() {
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ flex: 1, backgroundColor: colors.background }} contentContainerStyle={{ paddingBottom: 24 }}>
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      style={{ flex: 1, backgroundColor: colors.background }}
+      contentContainerStyle={{ paddingBottom: 24 }}
+    >
       <AppHeader />
       <HeroSection />
       <QRGenerator />
+      <FeaturesSection />
       <TemplatesSection />
       <Footer />
     </ScrollView>
   );
 }
 
-function SectionHeading({ eyebrow, title, body }: Readonly<{ eyebrow: string; title: string; body: string }>) {
+function SectionHeading({
+  eyebrow,
+  title,
+  body,
+}: Readonly<{ eyebrow: string; title: string; body: string }>) {
   return (
     <View style={{ gap: 10, maxWidth: 760 }}>
-      <Text selectable style={{ color: colors.primaryDark, fontSize: 12, fontWeight: "900", letterSpacing: 0.5 }}>
-        {eyebrow}
-      </Text>
-      <Text selectable style={{ color: colors.text, fontSize: 38, lineHeight: 44, fontWeight: "900" }}>
+      <View
+        style={{
+          borderWidth: 3,
+          borderColor: "#000",
+          backgroundColor: colors.accent,
+          paddingHorizontal: 10,
+          paddingVertical: 4,
+          alignSelf: "flex-start",
+          boxShadow: "3px 3px 0px 0px #000",
+        }}
+      >
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "900",
+            fontSize: 10,
+            letterSpacing: 3,
+            textTransform: "uppercase",
+          }}
+        >
+          {eyebrow}
+        </Text>
+      </View>
+      <Text
+        selectable
+        style={{
+          color: colors.foreground,
+          fontWeight: "900",
+          fontSize: 44,
+          lineHeight: 46,
+          letterSpacing: -1.5,
+        }}
+      >
         {title}
       </Text>
-      <Text selectable style={{ color: colors.textMuted, fontSize: 17, lineHeight: 26 }}>
+      <Text
+        selectable
+        style={{
+          color: colors.foreground,
+          fontWeight: "700",
+          fontSize: 17,
+          lineHeight: 26,
+          opacity: 0.7,
+        }}
+      >
         {body}
       </Text>
     </View>
   );
 }
 
+function FeaturesSection() {
+  return (
+    <SectionShell
+      style={{
+        backgroundColor: colors.secondary,
+        borderTopWidth: 4,
+        borderBottomWidth: 4,
+        borderColor: "#000",
+        paddingVertical: 72,
+      }}
+    >
+      <View style={{ gap: 40 }}>
+        <SectionHeading
+          eyebrow="Features"
+          title="Built for scanning, not just showing."
+          body="Every detail from contrast to export is tuned so your QR codes work reliably in the real world."
+        />
+
+        <View style={{ gap: 16 }}>
+          {features.map(([title, body], index) => (
+            <View
+              key={title}
+              style={{
+                flexDirection: "row",
+                gap: 16,
+                alignItems: "flex-start",
+                borderWidth: 4,
+                borderColor: "#000",
+                backgroundColor: colors.white,
+                padding: 18,
+                boxShadow: "6px 6px 0px 0px #000",
+                transform: [
+                  { rotate: index % 2 === 0 ? "0.5deg" : "-0.5deg" },
+                ],
+              }}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderWidth: 3,
+                  borderColor: "#000",
+                  backgroundColor: colors.accent,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  boxShadow: "3px 3px 0px 0px #000",
+                }}
+              >
+                <View
+                  style={{
+                    width: 18,
+                    height: 18,
+                    borderWidth: 3,
+                    borderColor: "#000",
+                    backgroundColor: "#000",
+                    transform: [{ rotate: "10deg" }],
+                  }}
+                />
+              </View>
+              <View style={{ flex: 1, gap: 4 }}>
+                <Text
+                  selectable
+                  style={{
+                    color: colors.foreground,
+                    fontWeight: "900",
+                    fontSize: 16,
+                    textTransform: "uppercase",
+                    letterSpacing: -0.3,
+                  }}
+                >
+                  {title}
+                </Text>
+                <Text
+                  selectable
+                  style={{
+                    color: colors.foreground,
+                    fontWeight: "700",
+                    fontSize: 14,
+                    opacity: 0.65,
+                  }}
+                >
+                  {body}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+    </SectionShell>
+  );
+}
+
 function TemplatesSection() {
   return (
-    <SectionShell id="templates" style={{ backgroundColor: colors.surface, paddingVertical: 84 }}>
-      <View style={{ gap: 32 }}>
+    <SectionShell
+      id="templates"
+      style={{
+        backgroundColor: colors.background,
+        paddingVertical: 84,
+      }}
+    >
+      <View style={{ gap: 40 }}>
         <SectionHeading
           eyebrow="Templates"
           title="Start from practical QR presets."
           body="Polished templates for the most common business, creator, hospitality, and campaign workflows."
         />
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 16 }}>
-          {templates.map((template) => (
-            <TemplateCard key={template.id} {...template} />
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 18,
+            justifyContent: "center",
+          }}
+        >
+          {templates.map((template, i) => (
+            <View
+              key={template.id}
+              style={{
+                transform: [
+                  {
+                    rotate:
+                      i % 4 === 0
+                        ? "1deg"
+                        : i % 4 === 1
+                          ? "-0.5deg"
+                          : i % 4 === 2
+                            ? "0.8deg"
+                            : "-1.2deg",
+                  },
+                ],
+              }}
+            >
+              <TemplateCard {...template} />
+            </View>
           ))}
         </View>
       </View>
@@ -275,40 +462,108 @@ function TemplatesSection() {
 function Footer() {
   const year = new Date().getFullYear();
   return (
-    <SectionShell style={{ backgroundColor: "#0b1220", paddingVertical: 34 }}>
-      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 18, flexWrap: "wrap" }}>
+    <SectionShell
+      style={{
+        backgroundColor: "#000",
+        paddingVertical: 40,
+        borderTopWidth: 4,
+        borderTopColor: colors.accent,
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 18,
+          flexWrap: "wrap",
+        }}
+      >
         <View style={{ gap: 6 }}>
-          <Text selectable style={{ color: "#ffffff", fontSize: 20, fontWeight: "900" }}>
-            PixelQR
-          </Text>
-          <Text selectable style={{ color: "#9fb0c9", fontSize: 13 }}>
-            Copyright {year}  
-            <Text selectable={false} onPress={() => Linking.openURL("https://github.com/adsalihac")} style={{ color: "#d4deed", textDecorationLine: "underline", fontWeight: "800" }}>
-            adsalihac
+          <View
+            style={{
+              borderWidth: 3,
+              borderColor: colors.white,
+              backgroundColor: colors.accent,
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              alignSelf: "flex-start",
+            }}
+          >
+            <Text
+              selectable
+              style={{
+                color: colors.foreground,
+                fontWeight: "900",
+                fontSize: 18,
+                textTransform: "uppercase",
+                letterSpacing: -0.5,
+              }}
+            >
+              PixelQR
+            </Text>
+          </View>
+          <Text
+            selectable
+            style={{
+              color: colors.white,
+              fontWeight: "700",
+              fontSize: 12,
+              opacity: 0.6,
+            }}
+          >
+            Copyright {year}{" "}
+            <Text
+              selectable={false}
+              onPress={() =>
+                Linking.openURL("https://github.com/adsalihac")
+              }
+              style={{
+                color: colors.white,
+                textDecorationLine: "underline",
+                fontWeight: "900",
+                opacity: 0.8,
+              }}
+            >
+              adsalihac
             </Text>
           </Text>
         </View>
-        <View>
-          <Text
-            selectable={false}
-            onPress={() => Linking.openURL("https://buymeacoffee.com/adsalihac")}
-            style={{
-              borderWidth: 1,
-              borderColor: "rgba(251,191,36,0.45)",
-              backgroundColor: "rgba(254,243,199,0.2)",
-              color: "#fbbf24",
-              fontWeight: "800",
-              fontSize: 12,
-              borderRadius: 999,
-              paddingHorizontal: 14,
-              paddingVertical: 8,
-              overflow: "hidden"
-            }}
-          >
-            Buy me a coffee
-          </Text>
-        </View>
+        <PressableFooter
+          label="Buy me a coffee"
+          onPress={() => Linking.openURL("https://buymeacoffee.com/adsalihac")}
+        />
       </View>
     </SectionShell>
+  );
+}
+
+function PressableFooter({
+  label,
+  onPress,
+}: {
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Text
+      selectable={false}
+      onPress={onPress}
+      style={{
+        borderWidth: 3,
+        borderColor: colors.secondary,
+        backgroundColor: "transparent",
+        color: colors.secondary,
+        fontWeight: "900",
+        fontSize: 11,
+        letterSpacing: 1.5,
+        textTransform: "uppercase",
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        overflow: "hidden",
+      }}
+    >
+      {label}
+    </Text>
   );
 }

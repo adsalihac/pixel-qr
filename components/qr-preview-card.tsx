@@ -1,7 +1,6 @@
-import { Canvas, LinearGradient, RoundedRect, vec } from "@shopify/react-native-skia";
 import { Platform, Text, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import { colors, shadows } from "@/constants/theme";
+import { colors } from "@/constants/theme";
 import { ExportActions } from "@/components/export-actions";
 import { ScanSafetyScore } from "@/components/scan-safety-score";
 import { useQRStore } from "@/store/qr-store";
@@ -19,8 +18,10 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
   const payload = buildQrPayload(formValues);
   const safety = getScanSafety(customization);
   const templateStyle = getTemplateVisualStyle(selectedTemplate);
-  const qrSize = Math.min(customization.size, compact ? 210 : 300);
-  const bgColor = customization.transparentBackground ? "transparent" : customization.backgroundColor;
+  const qrSize = Math.min(customization.size, compact ? 210 : 280);
+  const bgColor = customization.transparentBackground
+    ? "transparent"
+    : customization.backgroundColor;
   const previewRef = useRef<any>(null);
 
   const handleDownloadPng = useCallback(async () => {
@@ -28,7 +29,10 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
       try {
         const { toPng } = await import("html-to-image");
         if (previewRef.current) {
-          const dataUrl = await toPng(previewRef.current, { quality: 1, pixelRatio: 2 });
+          const dataUrl = await toPng(previewRef.current, {
+            quality: 1,
+            pixelRatio: 2,
+          });
           const anchor = document.createElement("a");
           anchor.href = dataUrl;
           anchor.download = "pixelqr.png";
@@ -47,24 +51,36 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
   return (
     <View
       style={{
-        backgroundColor: colors.surface,
-        borderWidth: 1.25,
-        borderColor: colors.border,
-        borderRadius: 26,
+        backgroundColor: colors.white,
+        borderWidth: 4,
+        borderColor: "#000",
         padding: compact ? 16 : 22,
         gap: 18,
-        boxShadow: shadows.soft,
-        borderCurve: "continuous",
-        overflow: "hidden"
+        boxShadow: "10px 10px 0px 0px #000",
       }}
     >
-      <PreviewBackground />
-
       <View style={{ gap: 4 }}>
-        <Text selectable style={{ color: colors.text, fontSize: compact ? 16 : 21, fontWeight: "900" }}>
-          Live preview
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "900",
+            fontSize: compact ? 16 : 20,
+            textTransform: "uppercase",
+            letterSpacing: -0.5,
+          }}
+        >
+          Live Preview
         </Text>
-        <Text selectable style={{ color: colors.textMuted, fontSize: 13, lineHeight: 19 }}>
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "700",
+            fontSize: 13,
+            opacity: 0.6,
+          }}
+        >
           Export-ready, branded, and checked for reliable scanning.
         </Text>
       </View>
@@ -100,7 +116,15 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
       {!compact ? (
         <>
           <ScanSafetyScore score={safety.score} warnings={safety.warnings} />
-          <ExportActions payload={payload} foregroundColor={customization.foregroundColor} backgroundColor={customization.backgroundColor} title={formValues.title} subtitle={formValues.subtitle} templateId={selectedTemplate} onDownloadPng={handleDownloadPng} />
+          <ExportActions
+            payload={payload}
+            foregroundColor={customization.foregroundColor}
+            backgroundColor={customization.backgroundColor}
+            title={formValues.title}
+            subtitle={formValues.subtitle}
+            templateId={selectedTemplate}
+            onDownloadPng={handleDownloadPng}
+          />
         </>
       ) : null}
     </View>
@@ -119,7 +143,7 @@ function PlainQrPreview({
   padding,
   logoUri,
   logoSize,
-  logoBackground
+  logoBackground,
 }: {
   payload: string;
   title: string;
@@ -140,12 +164,11 @@ function PlainQrPreview({
         alignSelf: "center",
         backgroundColor: bgColor,
         padding: Math.max(8, padding),
-        borderRadius: frameStyle === "ticket" ? 28 : 18,
-        borderWidth: frameStyle === "none" ? 0 : 1,
-        borderColor: colors.border,
+        borderWidth: frameStyle === "none" ? 0 : 4,
+        borderColor: "#000",
         alignItems: "center",
         gap: 10,
-        boxShadow: shadows.subtle
+        boxShadow: frameStyle === "none" ? undefined : "6px 6px 0px 0px #000",
       }}
     >
       <QRCode
@@ -156,17 +179,36 @@ function PlainQrPreview({
         logo={logoUri ? { uri: logoUri } : undefined}
         logoSize={logoUri ? Math.round((qrSize * logoSize) / 100) : 0}
         logoBackgroundColor={logoBackground ? backgroundColor : "transparent"}
-        logoBorderRadius={12}
+        logoBorderRadius={0}
         quietZone={0}
         ecl="H"
       />
       {title ? (
-        <Text selectable style={{ color: colors.text, fontSize: 18, fontWeight: "900", textAlign: "center" }}>
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "900",
+            fontSize: 18,
+            textAlign: "center",
+            textTransform: "uppercase",
+            letterSpacing: -0.3,
+          }}
+        >
           {title}
         </Text>
       ) : null}
       {subtitle ? (
-        <Text selectable style={{ color: colors.textMuted, fontSize: 13, textAlign: "center" }}>
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "700",
+            fontSize: 13,
+            textAlign: "center",
+            opacity: 0.65,
+          }}
+        >
           {subtitle}
         </Text>
       ) : null}
@@ -180,7 +222,7 @@ function StyledTemplatePreview({
   title,
   subtitle,
   foregroundColor,
-  backgroundColor
+  backgroundColor,
 }: {
   visualStyle: TemplateVisualStyle;
   payload: string;
@@ -189,8 +231,9 @@ function StyledTemplatePreview({
   foregroundColor: string;
   backgroundColor: string;
 }) {
-  const cardWidth = 330;
-  const cardHeight = visualStyle === "menu-poster" || visualStyle === "campaign-poster" ? 430 : 390;
+  const cardWidth = 320;
+  const cardHeight =
+    visualStyle === "menu-poster" || visualStyle === "campaign-poster" ? 420 : 380;
   const isPayment = visualStyle === "payment-standee";
   const isReview = visualStyle === "review-standee";
 
@@ -198,27 +241,109 @@ function StyledTemplatePreview({
     const posterBg = visualStyle === "menu-poster" ? "#f6b44d" : "#fff7ed";
     const posterText = visualStyle === "menu-poster" ? "#4a2700" : foregroundColor;
     return (
-      <View style={{ alignSelf: "center", width: cardWidth, minHeight: cardHeight, backgroundColor: posterBg, borderRadius: 22, padding: 26, alignItems: "center", justifyContent: "space-between", boxShadow: shadows.panel, overflow: "hidden" }}>
-        <View style={{ position: "absolute", top: -44, left: -36, width: 150, height: 150, borderRadius: 75, backgroundColor: "#ffffff", opacity: 0.9 }} />
-        <View style={{ position: "absolute", top: 28, right: 28, width: 56, height: 56, borderRadius: 28, backgroundColor: posterText, alignItems: "center", justifyContent: "center" }}>
-          <Text selectable style={{ color: "#ffffff", fontSize: 26, fontWeight: "900" }}>
+      <View
+        style={{
+          alignSelf: "center",
+          width: cardWidth,
+          minHeight: cardHeight,
+          backgroundColor: posterBg,
+          borderWidth: 4,
+          borderColor: "#000",
+          padding: 26,
+          alignItems: "center",
+          justifyContent: "space-between",
+          boxShadow: "8px 8px 0px 0px #000",
+          overflow: "hidden",
+        }}
+      >
+        <View
+          style={{
+            position: "absolute",
+            top: -44,
+            left: -36,
+            width: 150,
+            height: 150,
+            borderRadius: 999,
+            backgroundColor: "#ffffff",
+            opacity: 0.9,
+          }}
+        />
+        <View
+          style={{
+            position: "absolute",
+            top: 28,
+            right: 28,
+            width: 56,
+            height: 56,
+            borderRadius: 999,
+            backgroundColor: posterText,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text
+            selectable
+            style={{ color: "#ffffff", fontWeight: "900", fontSize: 26 }}
+          >
             {visualStyle === "menu-poster" ? "M" : "P"}
           </Text>
         </View>
-        <View style={{ position: "absolute", bottom: 24, left: 18, width: 52, height: 24, borderRadius: 999, backgroundColor: "#65a30d", transform: [{ rotate: "-24deg" }] }} />
-        <View style={{ position: "absolute", top: 130, right: -12, width: 62, height: 28, borderRadius: 999, backgroundColor: "#84cc16", transform: [{ rotate: "-18deg" }] }} />
+        <View
+          style={{
+            position: "absolute",
+            bottom: 24,
+            left: 18,
+            width: 52,
+            height: 24,
+            borderRadius: 999,
+            backgroundColor: "#65a30d",
+            transform: [{ rotate: "-24deg" }],
+          }}
+        />
         <View style={{ marginTop: 92, alignItems: "center" }}>
-          <Text selectable style={{ color: posterText, fontSize: 18, fontWeight: "900" }}>
+          <Text
+            selectable
+            style={{
+              color: posterText,
+              fontWeight: "900",
+              fontSize: 18,
+              letterSpacing: 2,
+            }}
+          >
             {visualStyle === "menu-poster" ? "DIGITAL" : "CAMPAIGN"}
           </Text>
-          <Text selectable style={{ color: posterText, fontSize: 44, lineHeight: 50, fontWeight: "900", textAlign: "center" }}>
+          <Text
+            selectable
+            style={{
+              color: posterText,
+              fontSize: 44,
+              lineHeight: 50,
+              fontWeight: "900",
+              textAlign: "center",
+            }}
+          >
             {visualStyle === "menu-poster" ? "MENU" : title || "LAUNCH"}
           </Text>
         </View>
-        <View style={{ backgroundColor: "#ffffff", padding: 16, borderRadius: 8 }}>
-          <QRCode value={payload || "pixelqr.app"} size={175} color={posterText} backgroundColor="#ffffff" quietZone={0} ecl="H" />
+        <View style={{ backgroundColor: "#ffffff", padding: 16 }}>
+          <QRCode
+            value={payload || "pixelqr.app"}
+            size={160}
+            color={posterText}
+            backgroundColor="#ffffff"
+            quietZone={0}
+            ecl="H"
+          />
         </View>
-        <Text selectable style={{ color: posterText, fontSize: 13, fontWeight: "800", textAlign: "center" }}>
+        <Text
+          selectable
+          style={{
+            color: posterText,
+            fontWeight: "800",
+            fontSize: 13,
+            textAlign: "center",
+          }}
+        >
           {subtitle || "Scan to open"}
         </Text>
       </View>
@@ -227,50 +352,200 @@ function StyledTemplatePreview({
 
   if (isPayment || isReview) {
     return (
-      <View style={{ alignSelf: "center", width: cardWidth, minHeight: cardHeight, backgroundColor: "#f1f5f9", borderRadius: 22, alignItems: "center", justifyContent: "center", padding: 28, boxShadow: shadows.panel }}>
-        <View style={{ width: 210, minHeight: 310, backgroundColor: "#ffffff", borderRadius: 10, borderWidth: isPayment ? 12 : 1, borderColor: isPayment ? "#0ea5e9" : colors.border, alignItems: "center", padding: 18, gap: 12, transform: [{ rotate: isPayment ? "-2deg" : "0deg" }] }}>
+      <View
+        style={{
+          alignSelf: "center",
+          width: cardWidth,
+          minHeight: cardHeight,
+          backgroundColor: "#f1f5f9",
+          borderWidth: 4,
+          borderColor: "#000",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 28,
+          boxShadow: "8px 8px 0px 0px #000",
+        }}
+      >
+        <View
+          style={{
+            width: 210,
+            minHeight: 290,
+            backgroundColor: "#ffffff",
+            borderWidth: isPayment ? 12 : 4,
+            borderColor: isPayment ? "#0ea5e9" : "#000",
+            alignItems: "center",
+            padding: 18,
+            gap: 12,
+            transform: [{ rotate: isPayment ? "-2deg" : "0deg" }],
+            boxShadow: "4px 4px 0px 0px #000",
+          }}
+        >
           {isReview ? (
             <>
-              <View style={{ position: "absolute", left: -5, top: 0, bottom: 0, width: 5, backgroundColor: "#16a34a" }} />
-              <View style={{ position: "absolute", right: -5, top: 0, bottom: 0, width: 5, backgroundColor: "#dc2626" }} />
+              <View
+                style={{
+                  position: "absolute",
+                  left: -5,
+                  top: 0,
+                  bottom: 0,
+                  width: 5,
+                  backgroundColor: "#16a34a",
+                }}
+              />
+              <View
+                style={{
+                  position: "absolute",
+                  right: -5,
+                  top: 0,
+                  bottom: 0,
+                  width: 5,
+                  backgroundColor: "#dc2626",
+                }}
+              />
             </>
           ) : null}
-          <Text selectable style={{ color: colors.text, fontSize: 20, fontWeight: "900", textAlign: "center" }}>
+          <Text
+            selectable
+            style={{
+              color: colors.foreground,
+              fontWeight: "900",
+              fontSize: 18,
+              textAlign: "center",
+            }}
+          >
             {isPayment ? "ALL-IN-ONE QR" : title || "Review us"}
           </Text>
-          <Text selectable style={{ color: colors.textMuted, fontSize: 13, fontWeight: "800", textAlign: "center" }}>
+          <Text
+            selectable
+            style={{
+              color: colors.foreground,
+              fontWeight: "700",
+              fontSize: 12,
+              textAlign: "center",
+              opacity: 0.6,
+            }}
+          >
             {isPayment ? "Pay using any UPI app" : "Review us on"}
           </Text>
-          <Text selectable style={{ color: isPayment ? foregroundColor : "#4285f4", fontSize: isPayment ? 22 : 28, fontWeight: "900", textAlign: "center" }}>
+          <Text
+            selectable
+            style={{
+              color: isPayment ? foregroundColor : "#4285f4",
+              fontWeight: "900",
+              fontSize: isPayment ? 20 : 26,
+              textAlign: "center",
+            }}
+          >
             {isPayment ? "GPay  PhonePe" : "Google"}
           </Text>
-          <QRCode value={payload || "pixelqr.app"} size={145} color={isPayment ? "#111827" : foregroundColor} backgroundColor="#ffffff" quietZone={0} ecl="H" />
-          <Text selectable style={{ color: colors.textMuted, fontSize: 11, fontWeight: "800", textAlign: "center" }}>
-            {subtitle || (isPayment ? "All accepted here" : "Scan for feedback")}
+          <QRCode
+            value={payload || "pixelqr.app"}
+            size={130}
+            color={isPayment ? "#111827" : foregroundColor}
+            backgroundColor="#ffffff"
+            quietZone={0}
+            ecl="H"
+          />
+          <Text
+            selectable
+            style={{
+              color: colors.foreground,
+              fontWeight: "700",
+              fontSize: 10,
+              textAlign: "center",
+              opacity: 0.6,
+            }}
+          >
+            {subtitle ||
+              (isPayment ? "All accepted here" : "Scan for feedback")}
           </Text>
         </View>
-        {isPayment ? <View style={{ width: 160, height: 18, borderRadius: 999, backgroundColor: "#94a3b8", marginTop: -4 }} /> : null}
+        {isPayment ? (
+          <View
+            style={{
+              width: 160,
+              height: 18,
+              borderRadius: 999,
+              backgroundColor: "#94a3b8",
+              marginTop: -4,
+            }}
+          />
+        ) : null}
       </View>
     );
   }
 
   return (
-    <View style={{ alignSelf: "center", width: cardWidth, minHeight: cardHeight, backgroundColor, borderRadius: 22, padding: 26, justifyContent: "space-between", boxShadow: shadows.panel, borderWidth: 1, borderColor: colors.border }}>
-      <View style={{ minHeight: 76, borderRadius: 18, backgroundColor: foregroundColor, alignItems: "center", justifyContent: "center", paddingHorizontal: 14 }}>
-        <Text selectable style={{ color: "#ffffff", fontSize: 24, fontWeight: "900", textAlign: "center" }}>
+    <View
+      style={{
+        alignSelf: "center",
+        width: cardWidth,
+        minHeight: cardHeight,
+        backgroundColor,
+        borderWidth: 4,
+        borderColor: "#000",
+        padding: 26,
+        justifyContent: "space-between",
+        boxShadow: "8px 8px 0px 0px #000",
+      }}
+    >
+      <View
+        style={{
+          minHeight: 68,
+          backgroundColor: foregroundColor,
+          alignItems: "center",
+          justifyContent: "center",
+          paddingHorizontal: 14,
+        }}
+      >
+        <Text
+          selectable
+          style={{
+            color: "#ffffff",
+            fontWeight: "900",
+            fontSize: 22,
+            textAlign: "center",
+          }}
+        >
           {title || "PixelQR"}
         </Text>
       </View>
       <View style={{ gap: 8 }}>
-        <Text selectable style={{ color: colors.text, fontSize: 28, lineHeight: 32, fontWeight: "900", textAlign: "center" }}>
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "900",
+            fontSize: 26,
+            lineHeight: 30,
+            textAlign: "center",
+            textTransform: "uppercase",
+          }}
+        >
           {templateLabel(visualStyle)}
         </Text>
-        <Text selectable style={{ color: colors.textMuted, fontSize: 14, lineHeight: 20, fontWeight: "700", textAlign: "center" }}>
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "700",
+            fontSize: 13,
+            textAlign: "center",
+            opacity: 0.6,
+          }}
+        >
           {subtitle || "Scan to open"}
         </Text>
       </View>
-      <View style={{ alignSelf: "center", backgroundColor: "#ffffff", padding: 16, borderRadius: 16 }}>
-        <QRCode value={payload || "pixelqr.app"} size={165} color={foregroundColor} backgroundColor="#ffffff" quietZone={0} ecl="H" />
+      <View style={{ alignSelf: "center", backgroundColor: "#ffffff", padding: 14 }}>
+        <QRCode
+          value={payload || "pixelqr.app"}
+          size={150}
+          color={foregroundColor}
+          backgroundColor="#ffffff"
+          quietZone={0}
+          ecl="H"
+        />
       </View>
     </View>
   );
@@ -303,25 +578,4 @@ function templateLabel(visualStyle: TemplateVisualStyle) {
     default:
       return "Scan QR";
   }
-}
-
-function PreviewBackground() {
-  if (Platform.OS === "web") {
-    return (
-      <View style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "#ffffff" }}>
-        <View style={{ position: "absolute", top: 0, right: 0, width: "82%", height: "72%", backgroundColor: "#ecf2ff" }} />
-        <View style={{ position: "absolute", bottom: 0, left: 0, width: "72%", height: "60%", backgroundColor: "#f2f6fb" }} />
-      </View>
-    );
-  }
-
-  return (
-    <View style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}>
-      <Canvas style={{ flex: 1 }}>
-        <RoundedRect x={0} y={0} width={900} height={700} r={24}>
-          <LinearGradient start={vec(0, 0)} end={vec(900, 700)} colors={["#ffffff", "#ecf2ff", "#f2f6fb"]} />
-        </RoundedRect>
-      </Canvas>
-    </View>
-  );
 }

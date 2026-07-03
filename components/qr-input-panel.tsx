@@ -17,7 +17,7 @@ const kindOptions: { value: QRKind; label: string }[] = [
   { value: "wifi", label: "Wi-Fi" },
   { value: "vcard", label: "vCard" },
   { value: "upi", label: "UPI" },
-  { value: "deeplink", label: "Deep link" }
+  { value: "deeplink", label: "Deep link" },
 ];
 
 export function QRInputPanel() {
@@ -28,21 +28,26 @@ export function QRInputPanel() {
     watch,
     reset,
     getValues,
-    formState: { errors }
+    formState: { errors },
   } = useForm<QRFormValues>({
     defaultValues: formValues,
     resolver: zodResolver(qrFormSchema),
-    mode: "onChange"
+    mode: "onChange",
   });
   const selectedTemplate = useQRStore((state) => state.selectedTemplate);
 
   useEffect(() => {
-    const subscription = watch((value) => setFormValues(value as Partial<QRFormValues>));
+    const subscription = watch((value) =>
+      setFormValues(value as Partial<QRFormValues>)
+    );
     return () => subscription.unsubscribe();
   }, [watch, setFormValues]);
 
   useEffect(() => {
-    if (selectedTemplate && JSON.stringify(getValues()) !== JSON.stringify(formValues)) {
+    if (
+      selectedTemplate &&
+      JSON.stringify(getValues()) !== JSON.stringify(formValues)
+    ) {
       reset(formValues);
     }
   }, [formValues, getValues, reset, selectedTemplate]);
@@ -50,10 +55,27 @@ export function QRInputPanel() {
   return (
     <Panel>
       <View style={{ gap: 4 }}>
-        <Text selectable style={{ color: colors.text, fontSize: 18, fontWeight: "800" }}>
-          QR content
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "900",
+            fontSize: 20,
+            textTransform: "uppercase",
+            letterSpacing: -0.5,
+          }}
+        >
+          QR Content
         </Text>
-        <Text selectable style={{ color: colors.textMuted, fontSize: 13, lineHeight: 19 }}>
+        <Text
+          selectable
+          style={{
+            color: colors.foreground,
+            fontWeight: "700",
+            fontSize: 13,
+            opacity: 0.6,
+          }}
+        >
           Choose the QR destination and keep the payload direct for faster scans.
         </Text>
       </View>
@@ -62,11 +84,17 @@ export function QRInputPanel() {
         control={control}
         name="kind"
         render={({ field }) => (
-          <View style={{ gap: 10 }}>
+          <View style={{ gap: 8 }}>
             <FieldLabel>QR type</FieldLabel>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
               {kindOptions.map((option) => (
-                <SelectPill key={option.value} value={field.value} option={option.value} label={option.label} onSelect={field.onChange} />
+                <SelectPill
+                  key={option.value}
+                  value={field.value}
+                  option={option.value}
+                  label={option.label}
+                  onSelect={field.onChange}
+                />
               ))}
             </View>
           </View>
@@ -79,9 +107,17 @@ export function QRInputPanel() {
         render={({ field }) => (
           <View style={{ gap: 8 }}>
             <FieldLabel>Destination or message</FieldLabel>
-            <Input value={field.value} onChangeText={field.onChange} placeholder="pixelqr.app" multiline={watch("kind") === "text"} />
+            <Input
+              value={field.value}
+              onChangeText={field.onChange}
+              placeholder="pixelqr.app"
+              multiline={watch("kind") === "text"}
+            />
             {errors.content ? (
-              <Text selectable style={{ color: colors.danger, fontSize: 12 }}>
+              <Text
+                selectable
+                style={{ color: colors.accent, fontWeight: "700", fontSize: 12 }}
+              >
                 {errors.content.message}
               </Text>
             ) : null}
@@ -96,7 +132,11 @@ export function QRInputPanel() {
           render={({ field }) => (
             <View style={{ gap: 8 }}>
               <FieldLabel>Email subject</FieldLabel>
-              <Input value={field.value} onChangeText={field.onChange} placeholder="Let's talk" />
+              <Input
+                value={field.value}
+                onChangeText={field.onChange}
+                placeholder="Let's talk"
+              />
             </View>
           )}
         />
@@ -109,7 +149,11 @@ export function QRInputPanel() {
           render={({ field }) => (
             <View style={{ gap: 8 }}>
               <FieldLabel>Country code</FieldLabel>
-              <Input value={field.value} onChangeText={field.onChange} placeholder="+1" />
+              <Input
+                value={field.value}
+                onChangeText={field.onChange}
+                placeholder="+1"
+              />
             </View>
           )}
         />
@@ -123,7 +167,11 @@ export function QRInputPanel() {
             render={({ field }) => (
               <View style={{ gap: 8 }}>
                 <FieldLabel>Network name</FieldLabel>
-                <Input value={field.value} onChangeText={field.onChange} placeholder="Guest Wi-Fi" />
+                <Input
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  placeholder="Guest Wi-Fi"
+                />
               </View>
             )}
           />
@@ -133,7 +181,11 @@ export function QRInputPanel() {
             render={({ field }) => (
               <View style={{ gap: 8 }}>
                 <FieldLabel>Password</FieldLabel>
-                <Input value={field.value} onChangeText={field.onChange} placeholder="Password" />
+                <Input
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  placeholder="Password"
+                />
               </View>
             )}
           />
@@ -147,7 +199,11 @@ export function QRInputPanel() {
           render={({ field }) => (
             <View style={{ gap: 8 }}>
               <FieldLabel>Title below QR</FieldLabel>
-              <Input value={field.value} onChangeText={field.onChange} placeholder="PixelQR" />
+              <Input
+                value={field.value}
+                onChangeText={field.onChange}
+                placeholder="PixelQR"
+              />
             </View>
           )}
         />
@@ -157,7 +213,11 @@ export function QRInputPanel() {
           render={({ field }) => (
             <View style={{ gap: 8 }}>
               <FieldLabel>Subtitle below QR</FieldLabel>
-              <Input value={field.value} onChangeText={field.onChange} placeholder="Scan to open" />
+              <Input
+                value={field.value}
+                onChangeText={field.onChange}
+                placeholder="Scan to open"
+              />
             </View>
           )}
         />
