@@ -1,9 +1,10 @@
-import { useState, useRef, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Platform, Text, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { colors } from "@/constants/theme";
 import { ExportActions } from "@/components/export-actions";
 import { ScanSafetyScore } from "@/components/scan-safety-score";
+import { QRAnalysis } from "@/components/qr-analysis";
 import { BeautifiedQrCode, AnimatedQrSvg } from "@/components/beautified-qr";
 import { Button } from "@/components/ui";
 import { useQRStore } from "@/store/qr-store";
@@ -25,35 +26,18 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
   const bgColor = customization.transparentBackground
     ? "transparent"
     : customization.backgroundColor;
-  const previewRef = useRef<any>(null);
+
+  const ecl = customization.errorCorrectionLevel;
+  const mp = customization.maskPattern === "auto" ? undefined : Number(customization.maskPattern);
 
   const handleDownloadPng = useCallback(async () => {
-    if (Platform.OS === "web" && typeof document !== "undefined") {
-      try {
-        const { toPng } = await import("html-to-image");
-        if (previewRef.current) {
-          const dataUrl = await toPng(previewRef.current, {
-            quality: 1,
-            pixelRatio: 2,
-          });
-          const anchor = document.createElement("a");
-          anchor.href = dataUrl;
-          anchor.download = "pixelqr.png";
-          document.body.appendChild(anchor);
-          anchor.click();
-          anchor.remove();
-          return;
-        }
-      } catch {
-        /* fallback */
-      }
-    }
     await downloadPng(
       payload,
       customization.foregroundColor,
       customization.backgroundColor,
+      ecl,
     );
-  }, [payload, customization.foregroundColor, customization.backgroundColor]);
+  }, [payload, customization.foregroundColor, customization.backgroundColor, ecl]);
 
   const handleDownloadAnimated = useCallback(async () => {
     const svgContent = AnimatedQrSvg(
@@ -61,6 +45,8 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
       customization.foregroundColor,
       customization.backgroundColor,
       beautification.animationSpeed,
+      ecl,
+      mp,
     );
     if (!svgContent) return;
     const blob = new Blob([svgContent], { type: "image/svg+xml" });
@@ -111,7 +97,7 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
         </Text>
       </View>
 
-      <View ref={previewRef} style={{ alignSelf: "center" }}>
+      <View style={{ alignSelf: "center" }}>
         {templateStyle && !compact ? (
           <StyledTemplatePreview
             visualStyle={templateStyle}
@@ -120,6 +106,7 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
             subtitle={formValues.subtitle}
             foregroundColor={customization.foregroundColor}
             backgroundColor={customization.backgroundColor}
+            ecl={ecl}
           />
         ) : beautification.enabled && !compact ? (
           <View style={{ gap: 10, alignItems: "center" }}>
@@ -129,6 +116,8 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
               foregroundColor={customization.foregroundColor}
               backgroundColor={customization.backgroundColor}
               beautification={beautification}
+              errorCorrectionLevel={ecl}
+              maskPattern={mp}
             />
             {formValues.title ? (
               <Text
@@ -180,6 +169,7 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
             frameBorderWidth={customization.frameBorderWidth}
             cornerRadius={customization.cornerRadius}
             shadowDepth={customization.shadowDepth}
+            ecl={ecl}
           />
         )}
       </View>
@@ -187,6 +177,11 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
       {!compact ? (
         <>
           <ScanSafetyScore score={safety.score} warnings={safety.warnings} />
+          <QRAnalysis
+            payload={payload}
+            errorCorrectionLevel={ecl}
+            maskPattern={mp}
+          />
           <ExportActions
             payload={payload}
             foregroundColor={customization.foregroundColor}
@@ -194,13 +189,13 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
             title={formValues.title}
             subtitle={formValues.subtitle}
             templateId={selectedTemplate}
+            errorCorrectionLevel={ecl}
             onDownloadPng={handleDownloadPng}
             onDownloadAnimated={
               beautification.enabled && beautification.animationEnabled
                 ? handleDownloadAnimated
                 : undefined
             }
-            previewRef={previewRef}
           />
           {customization.logoUri ? (
             <AiStyleSuggestion logoUri={customization.logoUri} />
@@ -285,6 +280,7 @@ function PlainQrPreview({
   frameBorderWidth,
   cornerRadius,
   shadowDepth,
+  ecl,
 }: {
   payload: string;
   title: string;
@@ -304,6 +300,7 @@ function PlainQrPreview({
   frameBorderWidth?: number;
   cornerRadius?: number;
   shadowDepth?: string;
+  ecl?: "L" | "M" | "Q" | "H";
 }) {
   const isCustom = frameStyle === "custom";
   const borderW = isCustom ? (frameBorderWidth ?? 4) : 4;
@@ -355,7 +352,7 @@ function PlainQrPreview({
         logoBackgroundColor={logoBackground ? backgroundColor : "transparent"}
         logoBorderRadius={0}
         quietZone={0}
-        ecl="H"
+        ecl={ecl ?? "H"}
       />
 
       {isCustom && frameCtaText ? (
@@ -425,6 +422,7 @@ function StyledTemplatePreview({
   subtitle,
   foregroundColor,
   backgroundColor,
+  ecl,
 }: {
   visualStyle: TemplateVisualStyle;
   payload: string;
@@ -432,6 +430,7 @@ function StyledTemplatePreview({
   subtitle: string;
   foregroundColor: string;
   backgroundColor: string;
+  ecl?: "L" | "M" | "Q" | "H";
 }) {
   const cardWidth = 320;
   const cardHeight =
@@ -489,7 +488,7 @@ function StyledTemplatePreview({
           />
         ))}
         <View style={{ backgroundColor: "#ffffff", padding: 16, marginTop: 10 }}>
-          <QRCode value={payload || "pixelqr.app"} size={150} color="#000" backgroundColor="#fff" quietZone={0} ecl="H" />
+          <QRCode value={payload || "pixelqr.app"} size={150} color="#000" backgroundColor="#fff" quietZone={0} ecl={ecl || "H"} />
         </View>
         <View style={{ flexDirection: "row", gap: 6 }}>
           {["Spotify", "Apple", "YouTube"].map((p) => (
@@ -524,7 +523,7 @@ function StyledTemplatePreview({
           {subtitle || "RSVP by August 1"}
         </Text>
         <View style={{ backgroundColor: "#ffffff", padding: 14, borderWidth: 3, borderColor: "#4c1d95" }}>
-          <QRCode value={payload || "pixelqr.app"} size={130} color="#4c1d95" backgroundColor="#fff" quietZone={0} ecl="H" />
+          <QRCode value={payload || "pixelqr.app"} size={130} color="#4c1d95" backgroundColor="#fff" quietZone={0} ecl={ecl || "H"} />
         </View>
         <View style={{ flexDirection: "row", gap: 16 }}>
           <Text selectable style={{ color: "#db2777", fontWeight: "900", fontSize: 11, letterSpacing: 1 }}>RSVP</Text>
@@ -557,7 +556,7 @@ function StyledTemplatePreview({
           </Text>
         </View>
         <View style={{ backgroundColor: "#ffffff", padding: 14 }}>
-          <QRCode value={payload || "pixelqr.app"} size={140} color="#0c4a6e" backgroundColor="#fff" quietZone={0} ecl="H" />
+          <QRCode value={payload || "pixelqr.app"} size={140} color="#0c4a6e" backgroundColor="#fff" quietZone={0} ecl={ecl || "H"} />
         </View>
         <Text selectable style={{ color: "#67e8f9", fontWeight: "800", fontSize: 10, letterSpacing: 2 }}>
           FLIGHTS • HOTEL • ACTIVITIES
@@ -662,7 +661,7 @@ function StyledTemplatePreview({
             color={posterText}
             backgroundColor="#ffffff"
             quietZone={0}
-            ecl="H"
+            ecl={ecl || "H"}
           />
         </View>
         <Text
@@ -774,7 +773,7 @@ function StyledTemplatePreview({
             color={isPayment ? "#111827" : foregroundColor}
             backgroundColor="#ffffff"
             quietZone={0}
-            ecl="H"
+            ecl={ecl || "H"}
           />
           <Text
             selectable
@@ -876,7 +875,7 @@ function StyledTemplatePreview({
           color={foregroundColor}
           backgroundColor="#ffffff"
           quietZone={0}
-          ecl="H"
+          ecl={ecl || "H"}
         />
       </View>
     </View>

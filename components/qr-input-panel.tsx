@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text, View } from "react-native";
 import { colors } from "@/constants/theme";
-import { FieldLabel, Input, Panel, SelectPill } from "@/components/ui";
+import { Button, FieldLabel, Input, Panel, SelectPill } from "@/components/ui";
+import { QRScanner } from "@/components/qr-scanner";
 import { useQRStore } from "@/store/qr-store";
 import { QRFormValues, QRKind } from "@/types/qr";
 import { qrFormSchema } from "@/utils/qr-validation";
@@ -23,6 +24,7 @@ const kindOptions: { value: QRKind; label: string }[] = [
 ];
 
 export function QRInputPanel() {
+  const [showScanner, setShowScanner] = useState(false);
   const formValues = useQRStore((state) => state.formValues);
   const setFormValues = useQRStore((state) => state.setFormValues);
   const {
@@ -331,6 +333,13 @@ export function QRInputPanel() {
           )}
         />
       </View>
+
+      <Button
+        label={showScanner ? "Hide Scanner" : "Scan QR Code"}
+        variant="outline"
+        onPress={() => setShowScanner(!showScanner)}
+      />
+      {showScanner ? <QRScanner /> : null}
     </Panel>
   );
 }

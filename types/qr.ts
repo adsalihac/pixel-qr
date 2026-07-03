@@ -14,6 +14,8 @@ export type QRKind =
 export type DotStyle = "square" | "rounded" | "circle" | "soft" | "cross" | "diamond" | "leaf";
 export type EyeStyle = "square" | "rounded" | "circle" | "leaf" | "diamondAlt";
 export type FrameStyle = "none" | "simple" | "label" | "ticket" | "custom" | "bold" | "double" | "shadow";
+export type ErrorCorrectionLevel = "L" | "M" | "Q" | "H";
+export type MaskPattern = "auto" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
 
 export type GradientMode = "none" | "linear";
 export type ShadowDepth = "small" | "medium" | "large";
@@ -90,6 +92,8 @@ export type QRCustomization = {
   frameBorderWidth: number;
   cornerRadius: number;
   shadowDepth: ShadowDepth;
+  errorCorrectionLevel: ErrorCorrectionLevel;
+  maskPattern: MaskPattern;
 };
 
 export type ScanWarning = {

@@ -11,10 +11,24 @@ declare module "qrcode" {
     };
   };
 
+  type BitMatrix = {
+    size: number;
+    data: Uint8Array;
+    reservedBit: Uint8Array;
+    get(row: number, col: number): number;
+    set(row: number, col: number, value: number, reserved?: boolean): void;
+    xor(row: number, col: number, value: number): void;
+    isReserved(row: number, col: number): boolean;
+  };
+
+  type ECLObject = {
+    bit: number;
+  };
+
   type QRCodeMatrix = {
-    modules: boolean[][];
+    modules: BitMatrix;
     version: number;
-    errorCorrectionLevel: ErrorCorrectionLevel;
+    errorCorrectionLevel: ECLObject;
     maskPattern: number;
     segments: unknown[];
   };

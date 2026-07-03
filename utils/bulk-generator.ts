@@ -77,14 +77,14 @@ export function detectColumns(
   return { label: String(label), content: String(content) };
 }
 
-export async function downloadBulkZip(entries: BulkEntry[]) {
+export async function downloadBulkZip(entries: BulkEntry[], errorCorrectionLevel: "L" | "M" | "Q" | "H" = "H") {
   const zip = new JSZip();
 
   for (const entry of entries) {
     const safeName = entry.label.replace(/[^a-z0-9]/gi, "_").slice(0, 40) || `qr_${entry.row}`;
 
     const dataUrl = await QRCode.toDataURL(entry.content, {
-      errorCorrectionLevel: "H",
+      errorCorrectionLevel,
       margin: 2,
       scale: 12,
     });

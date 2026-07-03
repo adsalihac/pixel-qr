@@ -21,7 +21,7 @@ export function ExportActions({
   templateId,
   onDownloadPng,
   onDownloadAnimated,
-  previewRef,
+  errorCorrectionLevel,
 }: {
   payload: string;
   foregroundColor: string;
@@ -31,7 +31,7 @@ export function ExportActions({
   templateId?: TemplateId;
   onDownloadPng?: () => Promise<void>;
   onDownloadAnimated?: () => Promise<void>;
-  previewRef?: React.RefObject<any>;
+  errorCorrectionLevel?: "L" | "M" | "Q" | "H";
 }) {
   const [status, setStatus] = useState("");
 
@@ -54,7 +54,7 @@ export function ExportActions({
             run(
               "PNG downloaded.",
               onDownloadPng ||
-                (() => downloadPng(payload, foregroundColor, backgroundColor)),
+                (() => downloadPng(payload, foregroundColor, backgroundColor, errorCorrectionLevel)),
             )
           }
         />
@@ -72,7 +72,7 @@ export function ExportActions({
           variant="secondary"
           onPress={() =>
             run("PDF print page opened.", () =>
-              downloadPdf(payload, foregroundColor, backgroundColor, title, subtitle),
+              downloadPdf(payload, foregroundColor, backgroundColor, title, subtitle, errorCorrectionLevel),
             )
           }
         />
@@ -83,20 +83,7 @@ export function ExportActions({
               onPress={() => run("Animated SVG downloaded.", onDownloadAnimated)}
             />
           ) : null}
-          {Platform.OS === "web" ? (
-            <Button
-              label="Share Image"
-              variant="secondary"
-              onPress={() =>
-                run("Share image downloaded.", () =>
-                  shareAsImage(
-                    previewRef?.current,
-                    title || "PixelQR",
-                  ),
-                )
-              }
-            />
-          ) : null}
+
         <Button
           label="Copy"
           variant="outline"

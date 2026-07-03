@@ -36,17 +36,22 @@ export function BeautifiedQrCode({
   foregroundColor,
   backgroundColor,
   beautification,
+  errorCorrectionLevel = "H",
+  maskPattern,
 }: {
   payload: string;
   size: number;
   foregroundColor: string;
   backgroundColor: string;
   beautification: QrBeautification;
+  errorCorrectionLevel?: "L" | "M" | "Q" | "H";
+  maskPattern?: number;
 }) {
   const qrData = useMemo(() => {
     try {
       const qr = QRCode.create(payload || "pixelqr.app", {
-        errorCorrectionLevel: "H",
+        errorCorrectionLevel,
+        maskPattern,
       });
       const modules = qr.modules as unknown as boolean[][];
       const count = modules.length;
@@ -55,7 +60,7 @@ export function BeautifiedQrCode({
     } catch {
       return { modules: [] as boolean[][], count: 0, cellSize: 0 };
     }
-  }, [payload, size]);
+  }, [payload, size, errorCorrectionLevel, maskPattern]);
 
   if (qrData.count === 0) return null;
 
@@ -173,10 +178,13 @@ export function AnimatedQrSvg(
   foregroundColor: string,
   backgroundColor: string,
   speed: number,
+  errorCorrectionLevel: "L" | "M" | "Q" | "H" = "H",
+  maskPattern?: number,
 ): string {
   try {
     const qr = QRCode.create(payload || "pixelqr.app", {
-      errorCorrectionLevel: "H",
+      errorCorrectionLevel,
+      maskPattern,
     });
     const modules = qr.modules as unknown as boolean[][];
     const count = modules.length;

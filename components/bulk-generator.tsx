@@ -14,8 +14,10 @@ import {
   downloadBulkZip,
 } from "@/utils/bulk-generator";
 import { BulkEntry } from "@/types/qr";
+import { useQRStore } from "@/store/qr-store";
 
 export function BulkGenerator() {
+  const ecl = useQRStore((state) => state.customization.errorCorrectionLevel);
   const [csvText, setCsvText] = useState("");
   const [entries, setEntries] = useState<BulkEntry[]>([]);
   const [status, setStatus] = useState("");
@@ -50,7 +52,7 @@ export function BulkGenerator() {
     if (entries.length === 0) return;
     setStatus("Generating QR codes...");
     try {
-      await downloadBulkZip(entries);
+      await downloadBulkZip(entries, ecl);
       setStatus(`Downloaded ${entries.length} QR codes as ZIP.`);
     } catch {
       setStatus("Failed to generate ZIP.");
@@ -63,7 +65,7 @@ export function BulkGenerator() {
       try {
         const QRCode = (await import("qrcode")).default;
         const dataUrl = await QRCode.toDataURL(entry.content, {
-          errorCorrectionLevel: "H",
+          errorCorrectionLevel: ecl,
           margin: 2,
           scale: 12,
         });

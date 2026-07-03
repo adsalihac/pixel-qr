@@ -51,9 +51,9 @@ const triggerWebDownload = (url: string, filename: string) => {
   anchor.remove();
 };
 
-export async function downloadPng(payload: string, foregroundColor: string, backgroundColor: string) {
+export async function downloadPng(payload: string, foregroundColor: string, backgroundColor: string, errorCorrectionLevel: "L" | "M" | "Q" | "H" = "H") {
   const dataUrl = await QRCode.toDataURL(payload || "pixelqr.app", {
-    errorCorrectionLevel: "H",
+    errorCorrectionLevel,
     margin: 2,
     scale: 12,
     color: {

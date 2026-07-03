@@ -14,12 +14,24 @@ import {
   ToggleButton,
 } from "@/components/ui";
 import { useQRStore } from "@/store/qr-store";
-import { DotStyle, EyeStyle, FrameStyle, ShadowDepth } from "@/types/qr";
+import { DotStyle, ErrorCorrectionLevel, EyeStyle, FrameStyle, MaskPattern, ShadowDepth } from "@/types/qr";
 
 const dotStyles: DotStyle[] = ["square", "rounded", "circle", "soft", "cross", "diamond", "leaf"];
 const eyeStyles: EyeStyle[] = ["square", "rounded", "circle", "leaf", "diamondAlt"];
 const frameStyles: FrameStyle[] = ["none", "simple", "label", "ticket", "custom", "bold", "double", "shadow"];
 const shadowDepths: ShadowDepth[] = ["small", "medium", "large"];
+const eclLevels: ErrorCorrectionLevel[] = ["L", "M", "Q", "H"];
+const maskPatterns: { value: MaskPattern; label: string }[] = [
+  { value: "auto", label: "Auto" },
+  { value: "0", label: "0" },
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "4", label: "4" },
+  { value: "5", label: "5" },
+  { value: "6", label: "6" },
+  { value: "7", label: "7" },
+];
 
 const numberOr = (value: string, fallback: number) => {
   const parsed = Number(value);
@@ -258,6 +270,38 @@ export function QRCustomizationPanel() {
               />
             ))}
           </View>
+        </View>
+      </View>
+
+      <View style={{ gap: 10 }}>
+        <FieldLabel>Error correction</FieldLabel>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+          {eclLevels.map((level) => (
+            <SelectPill
+              key={level}
+              value={customization.errorCorrectionLevel}
+              option={level}
+              label={`${level} — ${
+                level === "L" ? "7%" : level === "M" ? "15%" : level === "Q" ? "25%" : "30%"
+              }`}
+              onSelect={(errorCorrectionLevel) => setCustomization({ errorCorrectionLevel })}
+            />
+          ))}
+        </View>
+      </View>
+
+      <View style={{ gap: 10 }}>
+        <FieldLabel>QR mask pattern</FieldLabel>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+          {maskPatterns.map(({ value, label }) => (
+            <SelectPill
+              key={value}
+              value={customization.maskPattern}
+              option={value}
+              label={label}
+              onSelect={(maskPattern) => setCustomization({ maskPattern })}
+            />
+          ))}
         </View>
       </View>
 

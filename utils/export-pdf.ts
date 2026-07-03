@@ -6,9 +6,10 @@ export async function downloadPdf(
   backgroundColor: string,
   title: string,
   label = "Scan QR",
+  errorCorrectionLevel: "L" | "M" | "Q" | "H" = "H",
 ) {
   const dataUrl = await QRCode.toDataURL(payload || "pixelqr.app", {
-    errorCorrectionLevel: "H",
+    errorCorrectionLevel,
     margin: 2,
     scale: 20,
     color: { dark: foregroundColor, light: backgroundColor },
