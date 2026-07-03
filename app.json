@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "PixelQR",
+    "slug": "pixel-qr",
+    "scheme": "pixelqr",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
