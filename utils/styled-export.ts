@@ -44,6 +44,9 @@ export function buildStyledQrSvg(
   gradientColor: string | undefined,
   errorCorrectionLevel: "L" | "M" | "Q" | "H",
   maskPattern?: number,
+  logoUri?: string,
+  logoSize?: number,
+  logoBackground?: boolean,
 ): string {
   try {
     const QRCode = require("qrcode");
@@ -78,11 +81,24 @@ export function buildStyledQrSvg(
       </linearGradient>`;
     }
 
+    let logoMarkup = "";
+    if (logoUri) {
+      const logoW = (size * (logoSize || 16)) / 100;
+      const logoH = logoW;
+      const lx = size / 2 - logoW / 2;
+      const ly = size / 2 - logoH / 2;
+      if (logoBackground !== false) {
+        logoMarkup += `<rect x="${lx - 10}" y="${ly - 10}" width="${logoW + 20}" height="${logoH + 20}" rx="8" fill="${backgroundColor}" />`;
+      }
+      logoMarkup += `<image x="${lx}" y="${ly}" width="${logoW}" height="${logoH}" href="${logoUri}" preserveAspectRatio="xMidYMid meet" />`;
+    }
+
     return `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
   <defs>${gradientDef}</defs>
   <rect width="${size}" height="${size}" fill="${backgroundColor}" />
   <g fill="${hasGradient ? "url(#g)" : foregroundColor}">${inner}</g>
+  ${logoMarkup}
 </svg>`;
   } catch {
     return "";
@@ -109,6 +125,9 @@ export async function downloadStyledPng(
   gradientColor: string | undefined,
   errorCorrectionLevel: "L" | "M" | "Q" | "H",
   maskPattern?: number,
+  logoUri?: string,
+  logoSize?: number,
+  logoBackground?: boolean,
 ) {
   if (Platform.OS !== "web") return;
 
@@ -123,6 +142,9 @@ export async function downloadStyledPng(
     gradientColor,
     errorCorrectionLevel,
     maskPattern,
+    logoUri,
+    logoSize,
+    logoBackground,
   );
   if (!svgString) return;
 

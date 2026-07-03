@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import Svg, { Rect, Circle, Path, G, Defs, LinearGradient, Stop } from "react-native-svg";
+import Svg, { Rect, Circle, Path, G, Defs, LinearGradient, Stop, Image as SvgImage } from "react-native-svg";
 import QRCode from "qrcode";
 import { useMemo } from "react";
 import { DotStyle, EyeStyle, GradientMode, ModuleShape, QrBeautification } from "@/types/qr";
@@ -58,6 +58,9 @@ export function BeautifiedQrCode({
   beautification,
   errorCorrectionLevel = "H",
   maskPattern,
+  logoUri,
+  logoSize = 16,
+  logoBackground = true,
 }: {
   payload: string;
   size: number;
@@ -70,6 +73,9 @@ export function BeautifiedQrCode({
   beautification: QrBeautification;
   errorCorrectionLevel?: "L" | "M" | "Q" | "H";
   maskPattern?: number;
+  logoUri?: string;
+  logoSize?: number;
+  logoBackground?: boolean;
 }) {
   const qrData = useMemo(() => {
     try {
@@ -163,6 +169,28 @@ export function BeautifiedQrCode({
         </Defs>
         <Rect width={size} height={size} fill={backgroundColor} rx={0} />
         {elements}
+        {logoUri ? (
+          <G>
+            {logoBackground ? (
+              <Rect
+                x={size / 2 - (size * logoSize) / 200 - 10}
+                y={size / 2 - (size * logoSize) / 200 - 10}
+                width={(size * logoSize) / 100 + 20}
+                height={(size * logoSize) / 100 + 20}
+                rx={8}
+                fill={backgroundColor}
+              />
+            ) : null}
+            <SvgImage
+              x={size / 2 - (size * logoSize) / 200}
+              y={size / 2 - (size * logoSize) / 200}
+              width={(size * logoSize) / 100}
+              height={(size * logoSize) / 100}
+              href={logoUri}
+              preserveAspectRatio="xMidYMid meet"
+            />
+          </G>
+        ) : null}
       </Svg>
     </View>
   );

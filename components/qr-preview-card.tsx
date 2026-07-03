@@ -65,6 +65,9 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
         customization.gradientColor,
         ecl,
         mp,
+        customization.logoUri,
+        customization.logoSize,
+        customization.logoBackground,
       );
       return;
     }
@@ -150,6 +153,9 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
             gradientColor={customization.gradientColor}
             beautification={beautification}
             maskPattern={mp}
+            logoUri={customization.logoUri}
+            logoSize={customization.logoSize}
+            logoBackground={customization.logoBackground}
           />
         ) : (
           <View style={{ gap: 10, alignItems: "center" }}>
@@ -165,6 +171,9 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
               beautification={beautification}
               errorCorrectionLevel={ecl}
               maskPattern={mp}
+              logoUri={customization.logoUri}
+              logoSize={customization.logoSize}
+              logoBackground={customization.logoBackground}
             />
             {formValues.title ? (
               <Text
@@ -307,6 +316,9 @@ function StyledTemplatePreview({
   gradientColor,
   beautification,
   maskPattern,
+  logoUri,
+  logoSize,
+  logoBackground,
 }: {
   visualStyle: TemplateVisualStyle;
   payload: string;
@@ -321,6 +333,9 @@ function StyledTemplatePreview({
   gradientColor?: string;
   beautification?: QrBeautification;
   maskPattern?: number;
+  logoUri?: string;
+  logoSize?: number;
+  logoBackground?: boolean;
 }) {
   const cardWidth = 320;
   const cardHeight =
@@ -390,6 +405,9 @@ function StyledTemplatePreview({
             beautification={beautification || defaultBeautification}
             errorCorrectionLevel={ecl || "H"}
             maskPattern={maskPattern}
+            logoUri={logoUri}
+            logoSize={logoSize}
+            logoBackground={logoBackground}
           />
         </View>
         <View style={{ flexDirection: "row", gap: 6 }}>
@@ -437,6 +455,9 @@ function StyledTemplatePreview({
             beautification={beautification || defaultBeautification}
             errorCorrectionLevel={ecl || "H"}
             maskPattern={maskPattern}
+            logoUri={logoUri}
+            logoSize={logoSize}
+            logoBackground={logoBackground}
           />
         </View>
         <View style={{ flexDirection: "row", gap: 16 }}>
@@ -482,6 +503,9 @@ function StyledTemplatePreview({
             beautification={beautification || defaultBeautification}
             errorCorrectionLevel={ecl || "H"}
             maskPattern={maskPattern}
+            logoUri={logoUri}
+            logoSize={logoSize}
+            logoBackground={logoBackground}
           />
         </View>
         <Text selectable style={{ color: "#67e8f9", fontWeight: "800", fontSize: 10, letterSpacing: 2 }}>
@@ -593,6 +617,9 @@ function StyledTemplatePreview({
             beautification={beautification || defaultBeautification}
             errorCorrectionLevel={ecl || "H"}
             maskPattern={maskPattern}
+            logoUri={logoUri}
+            logoSize={logoSize}
+            logoBackground={logoBackground}
           />
         </View>
         <Text
@@ -710,6 +737,9 @@ function StyledTemplatePreview({
             beautification={beautification || defaultBeautification}
             errorCorrectionLevel={ecl || "H"}
             maskPattern={maskPattern}
+            logoUri={logoUri}
+            logoSize={logoSize}
+            logoBackground={logoBackground}
           />
           <Text
             selectable
