@@ -6,6 +6,8 @@ import { TemplateCard } from "@/components/template-card";
 import { SectionShell } from "@/components/ui";
 import { HistoryPanel } from "@/components/history-panel";
 import { BrandKitPanel } from "@/components/brand-kit-panel";
+import { BulkGenerator } from "@/components/bulk-generator";
+import { ApiSection as ApiSectionPanel } from "@/components/api-section";
 import { colors } from "@/constants/theme";
 
 const templates = [
@@ -252,6 +254,18 @@ const features = [
     "Custom frames with CTA",
     "Add custom labels and call-to-action buttons to your QR code frames.",
   ],
+  [
+    "QR Beautification",
+    "Custom module shapes, background patterns, and animated SVG export.",
+  ],
+  [
+    "Bulk Generation",
+    "Generate dozens of QR codes at once from CSV data, download as ZIP.",
+  ],
+  [
+    "REST API",
+    "Programmatic QR generation for CI/CD pipelines and automation.",
+  ],
 ] as const;
 
 export function PixelQRPage() {
@@ -264,10 +278,12 @@ export function PixelQRPage() {
       <AppHeader />
       <HeroSection />
       <QRGenerator />
+      <TemplatesSection />
       <HistorySection />
       <BrandKitsSection />
+      <BulkSection />
+      <ApiDocsSection />
       <FeaturesSection />
-      <TemplatesSection />
       <Footer />
     </ScrollView>
   );
@@ -372,6 +388,54 @@ function BrandKitsSection() {
           body="Save your color schemes and styles as brand kits for consistent branding."
         />
         <BrandKitPanel />
+      </View>
+    </SectionShell>
+  );
+}
+
+function BulkSection() {
+  return (
+    <SectionShell
+      id="bulk"
+      style={{
+        backgroundColor: colors.background,
+        borderTopWidth: 4,
+        borderBottomWidth: 4,
+        borderColor: "#000",
+        paddingVertical: 60,
+      }}
+    >
+      <View style={{ gap: 32 }}>
+        <SectionHeading
+          eyebrow="Bulk"
+          title="Generate QR codes in batches."
+          body="Paste CSV data with labels and content URLs, then download all as a ZIP."
+        />
+        <BulkGenerator />
+      </View>
+    </SectionShell>
+  );
+}
+
+function ApiDocsSection() {
+  return (
+    <SectionShell
+      id="api"
+      style={{
+        backgroundColor: colors.background,
+        borderTopWidth: 4,
+        borderBottomWidth: 4,
+        borderColor: "#000",
+        paddingVertical: 60,
+      }}
+    >
+      <View style={{ gap: 32 }}>
+        <SectionHeading
+          eyebrow="API"
+          title="Programmatic QR generation."
+          body="Integrate QR generation into your workflows with a simple REST API."
+        />
+        <ApiSectionPanel />
       </View>
     </SectionShell>
   );

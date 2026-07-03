@@ -1,19 +1,22 @@
+import { useState, useRef, useCallback } from "react";
 import { Platform, Text, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { colors } from "@/constants/theme";
 import { ExportActions } from "@/components/export-actions";
 import { ScanSafetyScore } from "@/components/scan-safety-score";
+import { BeautifiedQrCode, AnimatedQrSvg } from "@/components/beautified-qr";
+import { Button } from "@/components/ui";
 import { useQRStore } from "@/store/qr-store";
 import { TemplateVisualStyle } from "@/types/qr";
 import { buildQrPayload } from "@/utils/qr-payload";
 import { getScanSafety } from "@/utils/scan-safety";
 import { getTemplateVisualStyle } from "@/utils/template-style";
 import { downloadPng } from "@/utils/export-qr";
-import { useRef, useCallback } from "react";
 
 export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
   const formValues = useQRStore((state) => state.formValues);
   const customization = useQRStore((state) => state.customization);
+  const beautification = useQRStore((state) => state.beautification);
   const selectedTemplate = useQRStore((state) => state.selectedTemplate);
   const payload = buildQrPayload(formValues);
   const safety = getScanSafety(customization);
@@ -42,7 +45,7 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
           return;
         }
       } catch {
-        // fallback to plain QR
+        /* fallback */
       }
     }
     await downloadPng(
@@ -51,6 +54,25 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
       customization.backgroundColor,
     );
   }, [payload, customization.foregroundColor, customization.backgroundColor]);
+
+  const handleDownloadAnimated = useCallback(async () => {
+    const svgContent = AnimatedQrSvg(
+      payload,
+      customization.foregroundColor,
+      customization.backgroundColor,
+      beautification.animationSpeed,
+    );
+    if (!svgContent) return;
+    const blob = new Blob([svgContent], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "pixelqr-animated.svg";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  }, [payload, customization, beautification.animationSpeed]);
 
   return (
     <View
@@ -99,6 +121,45 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
             foregroundColor={customization.foregroundColor}
             backgroundColor={customization.backgroundColor}
           />
+        ) : beautification.enabled && !compact ? (
+          <View style={{ gap: 10, alignItems: "center" }}>
+            <BeautifiedQrCode
+              payload={payload}
+              size={qrSize}
+              foregroundColor={customization.foregroundColor}
+              backgroundColor={customization.backgroundColor}
+              beautification={beautification}
+            />
+            {formValues.title ? (
+              <Text
+                selectable
+                style={{
+                  color: colors.foreground,
+                  fontWeight: "900",
+                  fontSize: 18,
+                  textAlign: "center",
+                  textTransform: "uppercase",
+                  letterSpacing: -0.3,
+                }}
+              >
+                {formValues.title}
+              </Text>
+            ) : null}
+            {formValues.subtitle ? (
+              <Text
+                selectable
+                style={{
+                  color: colors.foreground,
+                  fontWeight: "700",
+                  fontSize: 13,
+                  textAlign: "center",
+                  opacity: 0.65,
+                }}
+              >
+                {formValues.subtitle}
+              </Text>
+            ) : null}
+          </View>
         ) : (
           <PlainQrPreview
             payload={payload}
@@ -132,9 +193,72 @@ export function QRPreviewCard({ compact = false }: { compact?: boolean }) {
             subtitle={formValues.subtitle}
             templateId={selectedTemplate}
             onDownloadPng={handleDownloadPng}
+            onDownloadAnimated={
+              beautification.enabled && beautification.animationEnabled
+                ? handleDownloadAnimated
+                : undefined
+            }
           />
+          {customization.logoUri ? (
+            <AiStyleSuggestion logoUri={customization.logoUri} />
+          ) : null}
         </>
       ) : null}
+    </View>
+  );
+}
+
+function AiStyleSuggestion({ logoUri }: { logoUri: string }) {
+  const [loading, setLoading] = useState(false);
+  const [suggested, setSuggested] = useState(false);
+  const suggestColors = useQRStore((state) => state.suggestColors);
+
+  const handleSuggest = async () => {
+    setLoading(true);
+    try {
+      const { extractColorsFromImage } = await import(
+        "@/utils/color-extract"
+      );
+      const palette = await extractColorsFromImage(logoUri);
+      suggestColors(palette);
+      setSuggested(true);
+    } catch {
+      /* silently fail */
+    }
+    setLoading(false);
+  };
+
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+        borderWidth: 3,
+        borderColor: "#000",
+        padding: 10,
+        backgroundColor: colors.muted,
+      }}
+    >
+      <Text
+        selectable
+        style={{
+          flex: 1,
+          color: colors.foreground,
+          fontWeight: "700",
+          fontSize: 11,
+        }}
+      >
+        {suggested
+          ? "Colors applied from your logo!"
+          : "Auto-style from your logo"}
+      </Text>
+      <Button
+        label={loading ? "Extracting..." : "Suggest"}
+        size="sm"
+        variant="outline"
+        onPress={handleSuggest}
+      />
     </View>
   );
 }
@@ -191,7 +315,6 @@ function PlainQrPreview({
           frameStyle === "none" ? undefined : "6px 6px 0px 0px #000",
       }}
     >
-      {/* Custom frame label above QR */}
       {isCustom && frameLabel ? (
         <Text
           selectable
@@ -221,7 +344,6 @@ function PlainQrPreview({
         ecl="H"
       />
 
-      {/* Custom frame CTA below QR */}
       {isCustom && frameCtaText ? (
         <View
           style={{

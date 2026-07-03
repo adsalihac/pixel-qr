@@ -117,3 +117,22 @@ export type BrandKit = {
 
 export type PrintSize = "1x1" | "2x3" | "3x4" | "4x6";
 export type PrintUnit = "inch" | "mm";
+
+export type BeautifyPattern = "none" | "dots" | "crosses" | "diamonds" | "circles";
+export type ModuleShape = "square" | "rounded" | "circle" | "diamond" | "droplet";
+
+export type QrBeautification = {
+  enabled: boolean;
+  moduleShape: ModuleShape;
+  pattern: BeautifyPattern;
+  patternColor: string;
+  animationEnabled: boolean;
+  animationSpeed: number;
+};
+
+export type BulkEntry = {
+  row: number;
+  label: string;
+  content: string;
+  payload: string;
+};

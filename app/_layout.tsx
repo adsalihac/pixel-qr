@@ -38,6 +38,14 @@ export default function RootLayout() {
       const style = document.createElement("style");
       style.textContent = globalCSS;
       document.head.appendChild(style);
+
+      // Register service worker for PWA offline
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/sw.js")
+          .then(() => {})
+          .catch(() => {});
+      }
     }
   }, []);
 

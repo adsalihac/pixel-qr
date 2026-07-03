@@ -19,6 +19,7 @@ export function ExportActions({
   subtitle,
   templateId,
   onDownloadPng,
+  onDownloadAnimated,
 }: {
   payload: string;
   foregroundColor: string;
@@ -27,6 +28,7 @@ export function ExportActions({
   subtitle: string;
   templateId?: TemplateId;
   onDownloadPng?: () => Promise<void>;
+  onDownloadAnimated?: () => Promise<void>;
 }) {
   const [status, setStatus] = useState("");
 
@@ -71,6 +73,13 @@ export function ExportActions({
             )
           }
         />
+        {onDownloadAnimated ? (
+          <Button
+            label="Animated SVG"
+            variant="secondary"
+            onPress={() => run("Animated SVG downloaded.", onDownloadAnimated)}
+          />
+        ) : null}
         <Button
           label="Copy"
           variant="outline"

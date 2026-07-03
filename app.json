@@ -16,7 +16,22 @@
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "pwa": {
+        "serviceWorkerPath": "/sw.js"
+      }
+    },
+    "extra": {
+      "pwa": {
+        "name": "PixelQR",
+        "shortName": "PixelQR",
+        "description": "Beautiful, scan-safe QR code generator",
+        "startUrl": "/",
+        "display": "standalone",
+        "backgroundColor": "#FFFDF5",
+        "themeColor": "#FF6B6B",
+        "orientation": "portrait"
+      }
     },
     "plugins": [
       "expo-router"

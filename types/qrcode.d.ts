@@ -11,8 +11,23 @@ declare module "qrcode" {
     };
   };
 
+  type QRCodeMatrix = {
+    modules: boolean[][];
+    version: number;
+    errorCorrectionLevel: ErrorCorrectionLevel;
+    maskPattern: number;
+    segments: unknown[];
+  };
+
+  type CreateOptions = {
+    errorCorrectionLevel?: ErrorCorrectionLevel;
+    maskPattern?: number;
+    toSJISFunc?: (codePoint: string) => number[];
+  };
+
   const QRCode: {
     toDataURL: (text: string, options?: ToDataUrlOptions) => Promise<string>;
+    create: (text: string, options?: CreateOptions) => QRCodeMatrix;
   };
 
   export default QRCode;

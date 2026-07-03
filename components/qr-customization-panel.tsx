@@ -4,6 +4,7 @@ import { colors } from "@/constants/theme";
 import { ColorPicker } from "@/components/color-picker";
 import { GradientPicker } from "@/components/gradient-picker";
 import { LogoUploader } from "@/components/logo-uploader";
+import { BeautifyOptions } from "@/components/beautify-options";
 import {
   Button,
   FieldLabel,
@@ -281,6 +282,16 @@ export function QRCustomizationPanel() {
           </View>
         </View>
       ) : null}
+
+      <View
+        style={{
+          borderTopWidth: 3,
+          borderTopColor: "#000",
+          paddingTop: 14,
+        }}
+      >
+        <BeautifyOptions />
+      </View>
 
       <LogoUploader
         uri={customization.logoUri}

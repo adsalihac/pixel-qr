@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   BrandKit,
   HistoryEntry,
+  QrBeautification,
   QRCustomization,
   QRFormValues,
   TemplateId,
@@ -54,14 +55,25 @@ export const defaultCustomization: QRCustomization = {
   frameBorderWidth: 4,
 };
 
+export const defaultBeautification: QrBeautification = {
+  enabled: false,
+  moduleShape: "rounded",
+  pattern: "none",
+  patternColor: "#000000",
+  animationEnabled: false,
+  animationSpeed: 1,
+};
+
 type QRStore = {
   formValues: QRFormValues;
   customization: QRCustomization;
+  beautification: QrBeautification;
   selectedTemplate?: TemplateId;
   history: HistoryEntry[];
   brandKits: BrandKit[];
   setFormValues: (values: Partial<QRFormValues>) => void;
   setCustomization: (values: Partial<QRCustomization>) => void;
+  setBeautification: (values: Partial<QrBeautification>) => void;
   resetCustomization: () => void;
   applyTemplate: (template: TemplateId) => void;
   saveToHistory: (name: string) => void;
@@ -72,6 +84,11 @@ type QRStore = {
   applyBrandKit: (kit: BrandKit) => void;
   deleteBrandKit: (id: string) => void;
   refreshBrandKits: () => void;
+  suggestColors: (palette: {
+    dominant: string;
+    contrast: string;
+    accent: string;
+  }) => void;
 };
 
 const templates: Record<
@@ -314,6 +331,7 @@ const templates: Record<
 export const useQRStore = create<QRStore>((set, get) => ({
   formValues: defaultFormValues,
   customization: defaultCustomization,
+  beautification: defaultBeautification,
   selectedTemplate: undefined,
   history: [],
   brandKits: [],
@@ -321,8 +339,16 @@ export const useQRStore = create<QRStore>((set, get) => ({
     set((state) => ({ formValues: { ...state.formValues, ...values } })),
   setCustomization: (values) =>
     set((state) => ({ customization: { ...state.customization, ...values } })),
+  setBeautification: (values) =>
+    set((state) => ({
+      beautification: { ...state.beautification, ...values },
+    })),
   resetCustomization: () =>
-    set({ customization: defaultCustomization, selectedTemplate: undefined }),
+    set({
+      customization: defaultCustomization,
+      beautification: defaultBeautification,
+      selectedTemplate: undefined,
+    }),
   applyTemplate: (template) =>
     set((state) => ({
       formValues: { ...state.formValues, ...templates[template].form },
@@ -381,5 +407,19 @@ export const useQRStore = create<QRStore>((set, get) => ({
   },
   refreshBrandKits: () => {
     set({ brandKits: getBrandKits() });
+  },
+  suggestColors: (palette) => {
+    set((state) => ({
+      customization: {
+        ...state.customization,
+        foregroundColor: palette.dominant,
+        backgroundColor:
+          palette.contrast === "#ffffff" ? "#ffffff" : "#000000",
+      },
+      beautification: {
+        ...state.beautification,
+        patternColor: palette.accent,
+      },
+    }));
   },
 }));
